@@ -45,6 +45,10 @@ public class sender extends HttpServlet
             String address = req.getParameter("address");
             String message = jb.toString();
             System.out.println("message: " + message);
+            long lastSeen = System.currentTimeMillis() - acomp.getLastSeenTime(address);
+            
+            System.out.println("recipient last seen " + lastSeen + " ms ago.");
+            
             acomp.send(address, message);
             pw = res.getWriter();
 

@@ -53,7 +53,7 @@ public class AsyncCompletion
                         try
                         {
                             request.os.write(("message: " + message.message + "\n").getBytes());
-                            System.out.println("Returning: " +message.message);
+                            System.out.println("Returning: " + message.message);
                             request.os.flush();
                             synchronized(list)
                             {
@@ -104,8 +104,15 @@ public class AsyncCompletion
         }
     }
     
+    public long getLastSeenTime(String address)
+    {
+        return mc.getLastSeenTime(address);
+    }
+    
     public void add(AsyncRequest req)
     {
+        mc.setLastSeenTime(req.address);
+
         List <Message> messages = mc.getAndRemove(req.address);
         if(messages != null && messages.size() != 0)
         {
@@ -136,4 +143,6 @@ public class AsyncCompletion
             }
         }
     }
+
+
 }

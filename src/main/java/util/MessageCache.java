@@ -14,6 +14,7 @@ public class MessageCache
             messages = new LinkedList<Message>();
         }
         List <Message> messages;
+        long lastSeenTime = -1;
     }
 
     private class CacheMap <K,V> extends LinkedHashMap <K,V>
@@ -55,6 +56,26 @@ public class MessageCache
     public MessageCache(int capacity)
     {
         cache = new CacheMap<String, Entry>(capacity);
+    }
+    
+    public synchronized void setLastSeenTime(String address)
+    {
+        Entry entry = cache.get(address);
+        if(entry == null)
+        {
+            entry = new Entry();
+            cache.put(address, entry);
+        }
+        entry.lastSeenTime = System.currentTimeMillis();
+    }
+    
+    public synchronized long getLastSeenTime(String address)
+    {
+        Entry entry = cache.get(address);
+        if(entry == null)
+            return -1;
+        
+        return entry.lastSeenTime;
     }
 
     public synchronized void add(String address, String message)
