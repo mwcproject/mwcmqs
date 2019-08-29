@@ -53,7 +53,7 @@ public class sender extends HttpServlet
             pw = res.getWriter();
 
             //writing html in the stream
-            pw.print("sender complete");
+            pw.print("lastSeen: "+lastSeen);
             
             log.log(Level.INFO, "sender");
         } catch (IOException e) {
