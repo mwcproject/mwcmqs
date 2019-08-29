@@ -1,18 +1,18 @@
 package util;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 
 import javax.servlet.AsyncContext;
 
 public class AsyncRequest {
     public AsyncContext ac;
     public String address;
-    public PrintWriter pw;
+    public OutputStream os;
 
-    public AsyncRequest(AsyncContext ac, String address, PrintWriter pw)
+    public AsyncRequest(AsyncContext ac, String address, OutputStream os)
     {
         this.ac = ac;
         this.address = address;
-        this.pw = pw;
+        this.os = os;
     }
 }

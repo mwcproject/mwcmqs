@@ -1,6 +1,5 @@
 package servlets;
 
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +25,7 @@ public class listener extends HttpServlet
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)
     {
-System.out.println("got a got: " + req);
+System.out.println("got a req: " + req);
         try
         {
             res.setContentType("text/html");//setting the content type
@@ -37,7 +36,7 @@ System.out.println("got a got: " + req);
             String address = req.getParameter("address");
             acomp.add(new AsyncRequest(ac,
                     address,
-                    new PrintWriter(res.getOutputStream())));
+                    res.getOutputStream()));
             log.log(Level.INFO, "listener");
         }
         catch(Exception err)

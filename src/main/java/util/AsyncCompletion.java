@@ -50,14 +50,24 @@ public class AsyncCompletion
 
                     if(request != null)
                     {
-                        request.pw.println("message: " + message.message);
-System.out.println("Returning: " +message.message);
-
-                        request.pw.flush();
-                        request.ac.complete();
-                        synchronized(list)
+                        try
                         {
-                            map.remove(message.address);
+                            request.os.write(("message: " + message.message).getBytes());
+                            System.out.println("Returning: " +message.message);
+                            request.os.flush();
+                            synchronized(list)
+                            {
+                                map.remove(message.address);
+                            }
+                        }
+                        catch(Exception err)
+                        {
+                            err.printStackTrace();
+                        }
+                        finally
+                        {
+                            // we complete no matter what.
+                            request.ac.complete();
                         }
                     }
                     else
@@ -99,15 +109,22 @@ System.out.println("Returning: " +message.message);
         List <Message> messages = mc.getAndRemove(req.address);
         if(messages != null && messages.size() != 0)
         {
-            // if the user has messages, complete right now.
-            req.pw.println("messagelist: " + messages.size());
-            for(Iterator<Message>itt=messages.iterator(); itt.hasNext();)
+            try
             {
-                Message next = itt.next();
-                req.pw.println("message[" + next.message.length() + "]: " +
-                               next.message);
+                // if the user has messages, complete right now.
+                req.os.write(("messagelist: " + messages.size()).getBytes());
+                for(Iterator<Message>itt=messages.iterator(); itt.hasNext();)
+                {
+                    Message next = itt.next();
+                    req.os.write(("message[" + next.message.length() + "]: " +
+                            next.message).getBytes());
+                }
+                req.os.flush();
             }
-            req.pw.flush();
+            catch(Exception err)
+            {
+                err.printStackTrace();
+            }
             req.ac.complete();
         }
         else
