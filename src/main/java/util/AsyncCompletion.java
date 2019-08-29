@@ -52,7 +52,7 @@ public class AsyncCompletion
                     {
                         try
                         {
-                            request.os.write(("message: " + message.message).getBytes());
+                            request.os.write(("message: " + message.message + "\n").getBytes());
                             System.out.println("Returning: " +message.message);
                             request.os.flush();
                             synchronized(list)
@@ -112,12 +112,12 @@ public class AsyncCompletion
             try
             {
                 // if the user has messages, complete right now.
-                req.os.write(("messagelist: " + messages.size()).getBytes());
+                req.os.write(("messagelist: " + messages.size() + "\n").getBytes());
                 for(Iterator<Message>itt=messages.iterator(); itt.hasNext();)
                 {
                     Message next = itt.next();
                     req.os.write(("message[" + next.message.length() + "]: " +
-                            next.message).getBytes());
+                            next.message + "\n").getBytes());
                 }
                 req.os.flush();
             }
