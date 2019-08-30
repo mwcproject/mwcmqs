@@ -57,7 +57,7 @@ public class sender extends HttpServlet
             boolean is_target_domain = true;
             String target_domain = DEFAULT_MWCMQS_DOMAIN;
             if(address.indexOf("@")>=0) {
-                target_domain = address.substring(address.indexOf(address.indexOf("@")+1));
+                target_domain = address.substring(address.indexOf("@")+1);
                 if(!target_domain.equalsIgnoreCase(domain))
                     is_target_domain = false;
             }
