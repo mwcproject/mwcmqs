@@ -5,9 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AsyncCompletion
 {
+    private static Logger log = Logger.getLogger("mwcmq2");
+
     private class ProcessThread extends Thread
     {
         ProcessThread()
@@ -35,12 +39,11 @@ public class AsyncCompletion
                     list.removeAll(list);
                 }
 
-                System.out.println("LocalList: " + localList);
                 for(Iterator <Message> itt=localList.iterator();
                     itt.hasNext();)
                 {
                     Message message = itt.next();
-                    System.out.println("Processing message: " + message);
+                    log.info("Processing message: " + message);
                     AsyncRequest request = null;
 
                     synchronized(list)
@@ -53,7 +56,7 @@ public class AsyncCompletion
                         try
                         {
                             request.os.write(("message: " + message.message + "\n").getBytes());
-                            System.out.println("Returning: " + message.message);
+                            log.info("Returning: " + message.message);
                             request.os.flush();
                             synchronized(list)
                             {
@@ -62,7 +65,10 @@ public class AsyncCompletion
                         }
                         catch(Exception err)
                         {
-                            err.printStackTrace();
+                            log.log(Level.SEVERE,
+                                    "AsyncCompletion.ProcessThread" +
+                                    " generated exception",
+                                    err);
                         }
                         finally
                         {
@@ -72,7 +78,7 @@ public class AsyncCompletion
                     }
                     else
                     {
-                        System.out.println("address " + message.address + " not connected now.");
+                        log.info("address " + message.address + " not connected now.");
                         mc.add(message.address, message.message);
                     }
                 }
@@ -130,7 +136,9 @@ public class AsyncCompletion
             }
             catch(Exception err)
             {
-                err.printStackTrace();
+                log.log(Level.SEVERE,
+                        "AsyncCompletion.add generated exception",
+                        err);
             }
             req.ac.complete();
         }

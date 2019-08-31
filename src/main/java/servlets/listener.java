@@ -25,7 +25,7 @@ public class listener extends HttpServlet
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)
     {
-        System.out.println("got a req: " + req);
+        log.info("got a request: " + req);
         try
         {
             res.setContentType("text/html");//setting the content type
@@ -37,7 +37,6 @@ public class listener extends HttpServlet
             acomp.add(new AsyncRequest(ac,
                     address,
                     res.getOutputStream()));
-            log.log(Level.INFO, "listener");
         }
         catch(Exception err)
         {

@@ -40,12 +40,14 @@ public class sender extends HttpServlet
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
+        log.info("Got a request: " + req.getRequestURI());
+
         HttpsURLConnection con = null;
         DataOutputStream wr = null;
         BufferedReader buf = null;
-        System.out.println("Got request = " + req.getRequestURI());
         StringBuilder jb = new StringBuilder();
         String line = null;
+        
         try {
           BufferedReader reader = req.getReader();
           while ((line = reader.readLine()) != null)
@@ -91,23 +93,23 @@ public class sender extends HttpServlet
                              "/sender?address=" +
                              address.replace("@", "%40");
                 
-                System.out.println("Forwarding: " + url);
+                log.info("Forwarding: " + url);
                 
                 URL obj = new URL(url);
                 con = (HttpsURLConnection) obj.openConnection();
+                con.setConnectTimeout(3000);
+                con.setReadTimeout(3000);
 
-                //add reuqest header
                 con.setRequestMethod("POST");
                 con.setRequestProperty("User-Agent", "mwcmqs 1.0");
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-                // Send post request
+
                 con.setDoOutput(true);
                 wr = new DataOutputStream(con.getOutputStream());
                 wr.writeBytes(message);
                 wr.flush();
                 wr.close();
 
-                int responseCode = con.getResponseCode();
                 buf = new BufferedReader(new InputStreamReader(
                                           con.getInputStream()));
                 
@@ -119,9 +121,10 @@ public class sender extends HttpServlet
                 pw.print(resp.toString());
             }
 
-            log.log(Level.INFO, "sender");
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        catch (Exception err)
+        {
+            log.log(Level.SEVERE, "sender servet generated exception", err);
         }
         finally
         {
