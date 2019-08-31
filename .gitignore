@@ -1,7 +1,7 @@
 jetty/logs/*
 jetty/webapps/root/WEB-INF/lib/*
 jetty/webapps/root/WEB-INF/classes/*
-
+jetty/webapps/root/WEB-INF/web.xml
 .project
 .settings
 .classpath
