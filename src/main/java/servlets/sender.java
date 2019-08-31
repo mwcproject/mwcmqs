@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.logging.Level;
@@ -39,7 +40,9 @@ public class sender extends HttpServlet
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
-        
+        HttpsURLConnection con = null;
+        DataOutputStream wr = null;
+        BufferedReader buf = null;
         System.out.println("Got request = " + req.getRequestURI());
         StringBuilder jb = new StringBuilder();
         String line = null;
@@ -74,7 +77,7 @@ public class sender extends HttpServlet
                         acomp.getLastSeenTime(address);
                 acomp.send(address, message);
                 pw = res.getWriter();
-                //writing html in the stream
+                //writing lastSeen in the stream
                 pw.print("lastSeen: "+lastSeen);
             }
             else
@@ -91,7 +94,7 @@ public class sender extends HttpServlet
                 System.out.println("Forwarding: " + url);
                 
                 URL obj = new URL(url);
-                HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+                con = (HttpsURLConnection) obj.openConnection();
 
                 //add reuqest header
                 con.setRequestMethod("POST");
@@ -99,15 +102,21 @@ public class sender extends HttpServlet
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
                 // Send post request
                 con.setDoOutput(true);
-                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr = new DataOutputStream(con.getOutputStream());
                 wr.writeBytes(message);
                 wr.flush();
                 wr.close();
 
                 int responseCode = con.getResponseCode();
-                System.out.println("Resp code = " + responseCode);
+                buf = new BufferedReader(new InputStreamReader(
+                                          con.getInputStream()));
+                
+                StringBuilder resp = new StringBuilder();
+                while((line=buf.readLine()) != null)
+                    resp.append(line);
+                
                 pw = res.getWriter();
-                pw.print("LastSeen: Unknown");
+                pw.print(resp.toString());
             }
 
             log.log(Level.INFO, "sender");
@@ -117,6 +126,9 @@ public class sender extends HttpServlet
         finally
         {
             try { pw.close(); } catch(Exception ign) {}
+            try { con.disconnect(); } catch(Exception ign) {}
+            try { wr.close(); } catch(Exception ign) {}
+            try { buf.close(); } catch(Exception ign) {}
         }
     }
 }
