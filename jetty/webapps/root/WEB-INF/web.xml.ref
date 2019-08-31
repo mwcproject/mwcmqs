@@ -12,6 +12,10 @@
     <servlet>
          <servlet-name>sender</servlet-name>
         <servlet-class>servlets.sender</servlet-class>
+        <init-param>
+            <param-name>mwcmqs_domain</param-name>
+            <param-value>YOUR_SERVER_FQDN</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>sender</servlet-name>
