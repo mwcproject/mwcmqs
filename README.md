@@ -59,7 +59,7 @@ The prerequisites are java and mvn. Please install both before begining.
 - start jetty
 ``` # ./start.sh```
 
-You're done. You can go to the next section to configure mwc713 wallets.
+You're done. Now you need to configure an SSL reverse proxy like nginx and install a certificate in it and forward requests to this jetty server which runs on port 8090 or configure jetty to run on port 443 with ssl and install a certificate in jetty. You can go to the next section to configure mwc713 wallets.
 
 ## Configuring Wallets to use your mwcmqs server
 
@@ -67,4 +67,4 @@ You can open your wallet713.toml config file. By default, this file is located i
 
 ```mwcmqs_domain = "example.com"```
 
-where "example.com" is the domain of the server you installed.
+where "example.com" is the domain of the server you installed. You will now be able to send requests to wallets connected to this server. See https://github.com/mwcproject/mwc713/blob/master/docs/mwcmqs_feature.md for more details about using mwc713 to send via mwcmqs.
