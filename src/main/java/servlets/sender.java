@@ -39,6 +39,8 @@ public class sender extends HttpServlet
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
+        
+        System.out.println("Got request = " + req.getRequestURI());
         StringBuilder jb = new StringBuilder();
         String line = null;
         try {
@@ -81,7 +83,13 @@ public class sender extends HttpServlet
                 // for now just do a synchronous connection.
                 // Maybe move to thread later.
                 
-                String url = "https://" + target_domain + "/sender?address=" + address;
+                String url = "https://" +
+                             target_domain +
+                             "/sender?address=" +
+                             address.replace("@", "%40");
+                
+                System.out.println("Forwarding: " + url);
+                
                 URL obj = new URL(url);
                 HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
