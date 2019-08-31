@@ -97,9 +97,9 @@ public class sender extends HttpServlet
                 wr.close();
 
                 int responseCode = con.getResponseCode();
-                System.out.println("Resp " + responseCode);
+                System.out.println("Resp code = " + responseCode);
                 pw = res.getWriter();
-                pw.println("LastSeen: Unknown");
+                pw.print("LastSeen: Unknown");
             }
 
             log.log(Level.INFO, "sender");
