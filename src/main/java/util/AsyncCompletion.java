@@ -105,7 +105,9 @@ public class AsyncCompletion
     
     public void send(String address, String message)
     {
-        Message m = new Message(address, message);
+        Message m = new Message(address,
+                                message,
+                                System.currentTimeMillis());
         synchronized(list)
         {
             list.add(m);

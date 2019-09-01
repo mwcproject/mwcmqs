@@ -1,5 +1,6 @@
 package util;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,11 +52,75 @@ public class MessageCache
 
     }
     
+    private class Cleaner extends Thread
+    {
+        private Object lock = null;
+        private Cleaner(Object lock)
+        {
+            setDaemon(true);
+            setName("MessageCache cleaner thread");
+            this.lock = lock;
+        }
+        public void run()
+        {
+            while(true)
+            {
+                // run every 5 minutes and cleanup
+                // messages older than 5 minutes
+                try { Thread.sleep(300*1000); } catch(Exception err)
+                {
+                    long timeNow = System.currentTimeMillis();
+                    long totalMessageSize = 0;
+                    long totalDeletedMessageSize = 0;
+                    long totalMessageCount = 0;
+                    long totalDeletedMessageCount = 0;
+
+                    synchronized(lock)
+                    {
+                        for(Iterator <String> itt=cache.keySet().iterator();
+                                itt.hasNext();)
+                        {
+                            String address = itt.next();
+                            Entry entry = cache.get(address);
+                            
+                            for(Iterator<Message> msgitt=
+                                    entry.messages.iterator();
+                                    msgitt.hasNext();)
+                            {
+                                Message msg = msgitt.next();
+                                totalMessageCount++;
+                                totalMessageSize += msg.message.length();
+                                if(timeNow - msg.timeStamp > 300 * 1000)
+                                {
+                                    totalDeletedMessageCount++;
+                                    totalDeletedMessageSize +=
+                                            msg.message.length();
+                                    System.out.println(
+                                            "Removing message: " + msg);
+                                    entry.messages.remove(msg);
+                                }
+                            }
+
+                        }
+                    }
+                    
+                    System.out.println("Cleaner summary: ");
+                    System.out.println(
+                        "totalMessageCount="+totalMessageCount+
+                        ",delMessageCount="+totalDeletedMessageCount+
+                        ",totalMessageSize="+totalMessageSize+
+                        ",delMessageSize="+totalDeletedMessageSize);
+                }
+            }
+        }
+    }
+    
     CacheMap <String, Entry> cache = null;
     
     public MessageCache(int capacity)
     {
         cache = new CacheMap<String, Entry>(capacity);
+        new Cleaner(this).start();
     }
     
     public synchronized void setLastSeenTime(String address)
@@ -86,7 +151,11 @@ public class MessageCache
             entry = new Entry();
             cache.put(address, entry);
         }
-        entry.messages.add(new Message(address, message));
+
+        entry.messages.add(
+                new Message(address,
+                            message,
+                            System.currentTimeMillis()));
     }
 
     public synchronized List<Message> getAndRemove(String address)
