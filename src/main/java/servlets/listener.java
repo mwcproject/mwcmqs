@@ -38,7 +38,7 @@ public class listener extends HttpServlet
             int delCount = -1;
             try
             {
-                Integer.parseInt(req.getParameter("delcount"));
+                delCount = Integer.parseInt(req.getParameter("delcount"));
             } catch(Exception err) {
                 
             }

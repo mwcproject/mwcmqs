@@ -105,7 +105,6 @@ public class MessageCache
         if(entry == null)
             return null;
         List <Message> ret = new LinkedList<Message>(entry.messages);
-        ret.addAll(entry.messages);
         return ret;
     }
     
