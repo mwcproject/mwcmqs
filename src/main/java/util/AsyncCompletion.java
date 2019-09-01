@@ -62,6 +62,9 @@ public class AsyncCompletion
                             {
                                  map.remove(message.address);
                             }
+                            
+                            if(request.delCount>=0)
+                                mc.add(request.address, message.message);
                         }
                         catch(Exception err)
                         {
