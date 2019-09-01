@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class MessageCache
 {
-    private static Logger log = Logger.getLogger("mwcmqs-stats");
+    private static Logger log = Logger.getLogger("mwcmqs2");
 
     private class Entry
     {
@@ -77,7 +77,7 @@ public class MessageCache
                 long totalDeletedMessageSize = 0;
                 long totalMessageCount = 0;
                 long totalDeletedMessageCount = 0;
-                System.out.println("Executing cleaner");
+                log.info("Executing cleaner");
 
                 try {
                 synchronized(lock)
