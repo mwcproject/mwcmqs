@@ -5,9 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MessageCache
 {
+    private static Logger log = Logger.getLogger("mwcmqs-stats");
+
     private class Entry
     {
         Entry()
@@ -96,8 +100,6 @@ public class MessageCache
                                 totalDeletedMessageCount++;
                                 totalDeletedMessageSize +=
                                         msg.message.length();
-                                System.out.println(
-                                        "Removing message: " + msg);
                                 entry.messages.remove(msg);
                             }
                         }
@@ -105,8 +107,8 @@ public class MessageCache
                     }
                 }
 
-                System.out.println("Cleaner summary: ");
-                System.out.println(
+                log.info("Cleaner summary: ");
+                log.info(
                         "totalMessageCount="+totalMessageCount+
                         ",delMessageCount="+totalDeletedMessageCount+
                         ",totalMessageSize="+totalMessageSize+
@@ -114,8 +116,7 @@ public class MessageCache
                 }
                 catch(Exception err)
                 {
-                    System.out.println("Cleaner generated exception");
-                    err.printStackTrace();
+                    log.log(Level.SEVERE, "Cleaner generated exception", err);
                 }
             }
 
