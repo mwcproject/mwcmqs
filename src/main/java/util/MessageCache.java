@@ -71,7 +71,7 @@ public class MessageCache
             {
                 // run every 5 minutes and cleanup
                 // messages older than 5 minutes
-                try { Thread.sleep(10*1000); } catch(Exception err) {}
+                try { Thread.sleep(300*1000); } catch(Exception err) {}
                 long timeNow = System.currentTimeMillis();
                 long totalMessageSize = 0;
                 long totalDeletedMessageSize = 0;
