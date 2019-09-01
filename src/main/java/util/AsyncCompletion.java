@@ -60,8 +60,7 @@ public class AsyncCompletion
                             request.os.flush();
                             synchronized(list)
                             {
-                                if(request.delCount < 0)
-                                    map.remove(message.address);
+                                 map.remove(message.address);
                             }
                         }
                         catch(Exception err)
