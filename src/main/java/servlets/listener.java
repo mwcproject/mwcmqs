@@ -20,7 +20,7 @@ public class listener extends HttpServlet
     
     public void init()
     {
-        acomp = new AsyncCompletion(); 
+        acomp = new AsyncCompletion();
     }
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -34,9 +34,19 @@ public class listener extends HttpServlet
             AsyncContext ac = req.startAsync();
             ac.setTimeout(1000*1000);
             String address = req.getParameter("address");
+            
+            int delCount = -1;
+            try
+            {
+                Integer.parseInt(req.getParameter("delcount"));
+            } catch(Exception err) {
+                
+            }
+
             acomp.add(new AsyncRequest(ac,
                     address,
-                    res.getOutputStream()));
+                    res.getOutputStream(),
+                    delCount));
         }
         catch(Exception err)
         {

@@ -119,7 +119,15 @@ public class AsyncCompletion
     {
         mc.setLastSeenTime(req.address);
 
-        List <Message> messages = mc.getAndRemove(req.address);
+        if(req.delCount>0)
+            mc.removeTo(req.address, req.delCount);
+        
+        List <Message> messages = null;
+        if(req.delCount < 0)
+            messages = mc.getAndRemove(req.address);
+        else
+            messages = mc.getAll(req.address);
+
         if(messages != null && messages.size() != 0)
         {
             try

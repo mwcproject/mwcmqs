@@ -99,6 +99,28 @@ public class MessageCache
         return ret;
     }
     
+    public synchronized List<Message> getAll(String address)
+    {
+        Entry entry = cache.get(address);
+        if(entry == null)
+            return null;
+        List <Message> ret = new LinkedList<Message>(entry.messages);
+        ret.addAll(entry.messages);
+        return ret;
+    }
+    
+    public synchronized void removeTo(String address, int index)
+    {
+        Entry entry = cache.get(address);
+        if(entry == null)
+            return;
+        
+        for(int i=0; i<index; i++)
+        {
+            entry.messages.remove(0);
+        }
+    }
+    
     // test program of simple map
     public static void main(String [] args)
     {
