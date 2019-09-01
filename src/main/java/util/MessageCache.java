@@ -67,52 +67,58 @@ public class MessageCache
             {
                 // run every 5 minutes and cleanup
                 // messages older than 5 minutes
-                try { Thread.sleep(10*1000); } catch(Exception err)
+                try { Thread.sleep(10*1000); } catch(Exception err) {}
+                long timeNow = System.currentTimeMillis();
+                long totalMessageSize = 0;
+                long totalDeletedMessageSize = 0;
+                long totalMessageCount = 0;
+                long totalDeletedMessageCount = 0;
+                System.out.println("Executing cleaner");
+
+                try {
+                synchronized(lock)
                 {
-                    long timeNow = System.currentTimeMillis();
-                    long totalMessageSize = 0;
-                    long totalDeletedMessageSize = 0;
-                    long totalMessageCount = 0;
-                    long totalDeletedMessageCount = 0;
-                    System.out.println("Executing cleaner");
-
-                    synchronized(lock)
+                    for(Iterator <String> itt=cache.keySet().iterator();
+                            itt.hasNext();)
                     {
-                        for(Iterator <String> itt=cache.keySet().iterator();
-                                itt.hasNext();)
-                        {
-                            String address = itt.next();
-                            Entry entry = cache.get(address);
-                            
-                            for(Iterator<Message> msgitt=
-                                    entry.messages.iterator();
-                                    msgitt.hasNext();)
-                            {
-                                Message msg = msgitt.next();
-                                totalMessageCount++;
-                                totalMessageSize += msg.message.length();
-                                if(timeNow - msg.timeStamp > 300 * 1000)
-                                {
-                                    totalDeletedMessageCount++;
-                                    totalDeletedMessageSize +=
-                                            msg.message.length();
-                                    System.out.println(
-                                            "Removing message: " + msg);
-                                    entry.messages.remove(msg);
-                                }
-                            }
+                        String address = itt.next();
+                        Entry entry = cache.get(address);
 
+                        for(Iterator<Message> msgitt=
+                                entry.messages.iterator();
+                                msgitt.hasNext();)
+                        {
+                            Message msg = msgitt.next();
+                            totalMessageCount++;
+                            totalMessageSize += msg.message.length();
+                            if(timeNow - msg.timeStamp > 300 * 1000)
+                            {
+                                totalDeletedMessageCount++;
+                                totalDeletedMessageSize +=
+                                        msg.message.length();
+                                System.out.println(
+                                        "Removing message: " + msg);
+                                entry.messages.remove(msg);
+                            }
                         }
+
                     }
-                    
-                    System.out.println("Cleaner summary: ");
-                    System.out.println(
+                }
+
+                System.out.println("Cleaner summary: ");
+                System.out.println(
                         "totalMessageCount="+totalMessageCount+
                         ",delMessageCount="+totalDeletedMessageCount+
                         ",totalMessageSize="+totalMessageSize+
                         ",delMessageSize="+totalDeletedMessageSize);
                 }
+                catch(Exception err)
+                {
+                    System.out.println("Cleaner generated exception");
+                    err.printStackTrace();
+                }
             }
+
         }
     }
     
