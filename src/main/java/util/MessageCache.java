@@ -193,7 +193,8 @@ public class MessageCache
         
         for(int i=0; i<index; i++)
         {
-            entry.messages.remove(0);
+            if(entry.messages.size()>0)
+                entry.messages.remove(0);
         }
     }
     
