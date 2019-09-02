@@ -88,6 +88,7 @@ public class sender extends HttpServlet
                     String line = null;
                     AsyncContext ac = hfr.ac;
                     
+                    log.info("Async http request to " + hfr.url);
                     try {
 
                         URL obj = new URL(hfr.url);
