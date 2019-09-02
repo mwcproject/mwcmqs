@@ -153,9 +153,6 @@ public class sender extends HttpServlet
     {
         log.info("Got a request: " + req.getRequestURI());
 
-        HttpsURLConnection con = null;
-        DataOutputStream wr = null;
-        BufferedReader buf = null;
         StringBuilder jb = new StringBuilder();
         String line = null;
         
@@ -227,9 +224,6 @@ public class sender extends HttpServlet
         finally
         {
             try { pw.close(); } catch(Exception ign) {}
-            try { con.disconnect(); } catch(Exception ign) {}
-            try { wr.close(); } catch(Exception ign) {}
-            try { buf.close(); } catch(Exception ign) {}
         }
     }
 }
