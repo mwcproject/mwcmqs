@@ -3,12 +3,17 @@ package servlets;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +30,108 @@ public class sender extends HttpServlet
     
     private AsyncCompletion acomp = null;
     private String domain = null;
+    
+    private class HttpForwardRequest 
+    {
+        HttpForwardRequest(String url,
+                           String message,
+                           OutputStream os,
+                           AsyncContext ac)
+        {
+            this.url = url;
+            this.message = message;
+            this.os = os;
+            this.ac = ac;
+        }
+
+        private String url = null;
+        private String message = null;
+        private OutputStream os = null;
+        private AsyncContext ac = null;
+    }
+    
+    private List <HttpForwardRequest> queue = new LinkedList<HttpForwardRequest>();
+    
+    private class HttpForwarder extends Thread
+    {
+        HttpForwarder()
+        {
+            setDaemon(true);
+            setName("Httpforwarder Thread");
+        }
+        
+        public void run()
+        {
+            List <HttpForwardRequest> localList =
+                    new LinkedList<HttpForwardRequest>();
+            while(true)
+            {
+                synchronized(queue)
+                {
+                    while(queue.isEmpty())
+                        try { queue.wait(); } catch(Exception err) {}
+
+                    localList.clear();
+                    localList.addAll(queue);
+                    queue.removeAll(queue);
+                }
+                
+                for(Iterator<HttpForwardRequest> itt=localList.iterator();
+                    itt.hasNext();)
+                {
+                    HttpForwardRequest hfr = itt.next();
+                    
+                    HttpsURLConnection con = null;
+                    DataOutputStream wr = null;
+                    PrintWriter pw = null;
+                    BufferedReader buf = null;
+                    String line = null;
+                    AsyncContext ac = hfr.ac;
+                    
+                    try {
+
+                        URL obj = new URL(hfr.url);
+                        con = (HttpsURLConnection) obj.openConnection();
+                        con.setConnectTimeout(3000);
+                        con.setReadTimeout(3000);
+
+                        con.setRequestMethod("POST");
+                        con.setRequestProperty("User-Agent", "mwcmqs 1.0");
+                        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+                        con.setDoOutput(true);
+                        wr = new DataOutputStream(con.getOutputStream());
+                        wr.writeBytes(hfr.message);
+                        wr.flush();
+                        wr.close();
+
+                        buf = new BufferedReader(new InputStreamReader(
+                                con.getInputStream()));
+
+                        StringBuilder resp = new StringBuilder();
+                        while((line=buf.readLine()) != null)
+                            resp.append(line);
+
+                        pw = new PrintWriter(hfr.os);
+                        pw.print(resp.toString());
+
+                    }
+                    catch(Exception err)
+                    {
+                        err.printStackTrace();
+                    }
+                    finally
+                    {
+                        try { pw.close(); } catch(Exception ign) {}
+                        try { wr.close(); } catch(Exception ign) {}
+                        try { buf.close(); } catch(Exception ign) {}
+                        try { con.disconnect(); } catch(Exception ign) {}
+                        try { ac.complete(); } catch(Exception ign) {}
+                    }
+                }
+            }
+        }
+    }
 
     public void init()
     {
@@ -34,6 +141,9 @@ public class sender extends HttpServlet
             domain = suggest;
         else
             domain = DEFAULT_MWCMQS_DOMAIN;
+        
+        // start async thread.
+        new HttpForwarder().start();
     }
 
     private static Logger log = Logger.getLogger("mwcmq2");
@@ -84,41 +194,28 @@ public class sender extends HttpServlet
             }
             else
             {
-                // it's another server so we need to forward.
-                // for now just do a synchronous connection.
-                // Maybe move to thread later.
+                
+                // we pass to another thread so start async
+                AsyncContext ac = req.startAsync();
+                ac.setTimeout(1000*1000);
                 
                 String url = "https://" +
                              target_domain +
                              "/sender?address=" +
                              address.replace("@", "%40");
                 
+                HttpForwardRequest hfr = new HttpForwardRequest(url,
+                                                     message,
+                                                     res.getOutputStream(),
+                                                     ac);
+
+                synchronized(queue)
+                {
+                    queue.add(hfr);
+                    queue.notify();
+                }
+                
                 log.info("Forwarding: " + url);
-                
-                URL obj = new URL(url);
-                con = (HttpsURLConnection) obj.openConnection();
-                con.setConnectTimeout(3000);
-                con.setReadTimeout(3000);
-
-                con.setRequestMethod("POST");
-                con.setRequestProperty("User-Agent", "mwcmqs 1.0");
-                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
-                con.setDoOutput(true);
-                wr = new DataOutputStream(con.getOutputStream());
-                wr.writeBytes(message);
-                wr.flush();
-                wr.close();
-
-                buf = new BufferedReader(new InputStreamReader(
-                                          con.getInputStream()));
-                
-                StringBuilder resp = new StringBuilder();
-                while((line=buf.readLine()) != null)
-                    resp.append(line);
-                
-                pw = res.getWriter();
-                pw.print(resp.toString());
             }
 
         }
