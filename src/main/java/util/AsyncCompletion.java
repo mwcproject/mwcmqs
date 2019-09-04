@@ -160,6 +160,11 @@ public class AsyncCompletion
         }
     }
     
+    public void updateLastSeenTime(String address)
+    {
+        mc.updateLastSeenTime(address);
+    }
+    
     public long getLastSeenTime(String address)
     {
         return mc.getLastSeenTime(address);

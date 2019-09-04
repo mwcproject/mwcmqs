@@ -144,6 +144,17 @@ public class MessageCache
         }
     }
     
+    public synchronized void updateLastSeenTime(String address)
+    {
+        Entry entry = cache.get(address);
+        
+        if(entry != null)
+        {
+            entry.lastSeenTime = System.currentTimeMillis();
+        }
+        // don't worry about null case. It will be created with a current timestamp.
+    }
+    
     public synchronized long getLastSeenTime(String address)
     {
         Entry entry = cache.get(address);
