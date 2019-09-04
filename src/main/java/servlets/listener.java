@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import util.AsyncCompletion;
 import util.AsyncRequest;
+import util.Message;
 
 public class listener extends HttpServlet
 {
@@ -30,23 +33,50 @@ public class listener extends HttpServlet
         {
             res.setContentType("text/html");//setting the content type
 
-            // create an async request
-            AsyncContext ac = req.startAsync();
-            ac.setTimeout(1000*1000);
             String address = req.getParameter("address");
             
-            int delCount = -1;
+            long listenerTime = 0;
+            
             try
             {
-                delCount = Integer.parseInt(req.getParameter("delcount"));
+                listenerTime = Long.parseLong(req.getParameter("time_now"));
             } catch(Exception err) {
-                
+                // not specified
             }
+            
+            System.out.println("listenerTime="+listenerTime);
+            if(!acomp.isMostRecentAndSet(address, listenerTime))
+            {
+                // a newer client has logged in
+                // tell this client to exit.
+                OutputStream os = res.getOutputStream();
+                String closeMessage = "closenewlogin";
+                
+                os.write(("messagelist: 1\n").getBytes());
+                os.write(("message[" + closeMessage.length() + "]: " +
+                            closeMessage + "\n").getBytes());
+                os.flush();
+            }
+            else
+            {
+                // create an async request
+                AsyncContext ac = req.startAsync();
+                ac.setTimeout(1000*1000);
+                
+                int delCount = -1;
+                try
+                {
+                    delCount = Integer.parseInt(req.getParameter("delcount"));
+                } catch(Exception err) {
 
-            acomp.add(new AsyncRequest(ac,
-                    address,
-                    res.getOutputStream(),
-                    delCount));
+                }
+
+                acomp.add(new AsyncRequest(ac,
+                        address,
+                        res.getOutputStream(),
+                        delCount,
+                        listenerTime));
+            }
         }
         catch(Exception err)
         {

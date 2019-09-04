@@ -14,12 +14,14 @@ public class MessageCache
 
     private class Entry
     {
-        Entry()
+        Entry(long startTime)
         {
             messages = new LinkedList<Message>();
+            lastSeenTime = System.currentTimeMillis();
         }
         List <Message> messages;
         long lastSeenTime = -1;
+        long startTime = -1;
     }
 
     private class CacheMap <K,V> extends LinkedHashMap <K,V>
@@ -131,15 +133,14 @@ public class MessageCache
         new Cleaner(this).start();
     }
     
-    public synchronized void setLastSeenTime(String address)
+    public synchronized void setLastSeenTime(String address, long startTime)
     {
         Entry entry = cache.get(address);
         if(entry == null)
         {
-            entry = new Entry();
+            entry = new Entry(startTime);
             cache.put(address, entry);
         }
-        entry.lastSeenTime = System.currentTimeMillis();
     }
     
     public synchronized long getLastSeenTime(String address)
@@ -151,12 +152,12 @@ public class MessageCache
         return entry.lastSeenTime;
     }
 
-    public synchronized void add(String address, String message)
+    public synchronized void add(String address, String message, long startTime)
     {
         Entry entry = cache.get(address);
         if(entry == null)
         {
-            entry = new Entry();
+            entry = new Entry(startTime);
             cache.put(address, entry);
         }
 
@@ -198,17 +199,33 @@ public class MessageCache
         }
     }
     
+    public synchronized boolean isMostRecentAndSet(String address, long listenerTime)
+    {
+        Entry entry = cache.get(address);
+        if(entry == null)
+            return true;
+
+        if(listenerTime >= entry.startTime)
+        {
+            // now we need to set it to stay valid.
+            entry.startTime = listenerTime;
+            return true;
+        }
+        
+        return false;
+    }
+    
     // test program of simple map
     public static void main(String [] args)
     {
         MessageCache cm = new MessageCache(3);
         
-        cm.add("1", "a");
+        cm.add("1", "a", 0L);
         
-        cm.add("2", "b");
-        cm.add("2", "hihi");
-        cm.add("3", "c");
-        cm.add("4", "d");
+        cm.add("2", "b", 0L);
+        cm.add("2", "hihi", 0L);
+        cm.add("3", "c", 0L);
+        cm.add("4", "d", 0L);
         
         System.out.println("1="+cm.getAndRemove("1"));
         System.out.println("2="+cm.getAndRemove("2"));

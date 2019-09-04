@@ -64,7 +64,7 @@ public class AsyncCompletion
                             }
                             
                             if(request.delCount>=0)
-                                mc.add(request.address, message.message);
+                                mc.add(request.address, message.message, request.startTime);
                         }
                         catch(Exception err)
                         {
@@ -82,7 +82,9 @@ public class AsyncCompletion
                     else
                     {
                         log.info("address " + message.address + " not connected now.");
-                        mc.add(message.address, message.message);
+                        // we use 0 start time because we don't know what the
+                        // listener's start time will be, but will be great than 0.
+                        mc.add(message.address, message.message, 0);
                     }
                 }
             }
@@ -122,7 +124,7 @@ public class AsyncCompletion
     
     public void add(AsyncRequest req)
     {
-        mc.setLastSeenTime(req.address);
+        mc.setLastSeenTime(req.address, req.startTime);
 
         if(req.delCount>0)
             mc.removeTo(req.address, req.delCount);
@@ -163,6 +165,11 @@ public class AsyncCompletion
                 map.put(req.address, req);
             }
         }
+    }
+
+    public boolean isMostRecentAndSet(String address, long listenerTime)
+    {
+        return mc.isMostRecentAndSet(address, listenerTime);
     }
 
 
