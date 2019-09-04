@@ -53,30 +53,33 @@ public class AsyncCompletion
 
                     if(request != null)
                     {
-                        try
+                        synchronized(request)
                         {
-                            request.os.write(("message: " + message.message + "\n").getBytes());
-                            log.info("Returning: " + message.message);
-                            request.os.flush();
-                            synchronized(list)
+                            try
                             {
-                                 map.remove(message.address);
+                                request.os.write(("message: " + message.message + "\n").getBytes());
+                                log.info("Returning: " + message.message);
+                                request.os.flush();
+                                synchronized(list)
+                                {
+                                    map.remove(message.address);
+                                }
+
+                                if(request.delCount>=0)
+                                    mc.add(request.address, message.message, request.startTime);
                             }
-                            
-                            if(request.delCount>=0)
-                                mc.add(request.address, message.message, request.startTime);
-                        }
-                        catch(Exception err)
-                        {
-                            log.log(Level.SEVERE,
-                                    "AsyncCompletion.ProcessThread" +
-                                    " generated exception",
-                                    err);
-                        }
-                        finally
-                        {
-                            // we complete no matter what.
-                            request.ac.complete();
+                            catch(Exception err)
+                            {
+                                log.log(Level.SEVERE,
+                                        "AsyncCompletion.ProcessThread" +
+                                                " generated exception",
+                                                err);
+                            }
+                            finally
+                            {
+                                // we complete no matter what.
+                                request.ac.complete();
+                            }
                         }
                     }
                     else
@@ -87,6 +90,46 @@ public class AsyncCompletion
                         mc.add(message.address, message.message, 0);
                     }
                 }
+            }
+        }
+    }
+    
+    public void closeConnection(String address)
+    {
+        AsyncRequest request = null;
+        String message = "closenewlogin";
+
+        synchronized(list)
+        {
+            request = map.get(address);
+        }
+        
+        if(request == null) return; // if it's not connected nothing to do.
+        
+        synchronized(request)
+        {
+            try
+            {
+                request.os.write(("message: " + message + "\n").getBytes());
+                log.info("Returning: " + message);
+                request.os.flush();
+                synchronized(list)
+                {
+                    map.remove(address);
+                }
+
+            }
+            catch(Exception err)
+            {
+                log.log(Level.SEVERE,
+                        "AsyncCompletion.ProcessThread" +
+                                " generated exception",
+                                err);
+            }
+            finally
+            {
+                // we complete no matter what.
+                request.ac.complete();
             }
         }
     }
