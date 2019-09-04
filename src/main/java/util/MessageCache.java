@@ -210,14 +210,15 @@ public class MessageCache
 
         if(listenerTime >= entry.startTime)
         {
-            // now we need to set it to stay valid.
-            entry.startTime = listenerTime;
-            
             // also wakeup the other connection to disconnect immediately
             // but only iff it's not us. If listenerTime = entry.startTime
             // the request came from us.
             if(listenerTime > entry.startTime)
                 acomp.closeConnection(address);
+            
+            // now we need to set it to stay valid.
+            entry.startTime = listenerTime;
+           
             
             return true;
         }
