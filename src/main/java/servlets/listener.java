@@ -43,7 +43,6 @@ public class listener extends HttpServlet
                 // not specified
             }
             
-            System.out.println("listenerTime="+listenerTime);
             if(!acomp.isMostRecentAndSet(address, listenerTime, acomp))
             {
                 // a newer client has logged in
@@ -67,7 +66,6 @@ public class listener extends HttpServlet
                 {
                     delCount = Integer.parseInt(req.getParameter("delcount"));
                 } catch(Exception err) {
-
                 }
 
                 acomp.add(new AsyncRequest(ac,

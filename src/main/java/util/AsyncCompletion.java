@@ -23,22 +23,59 @@ public class AsyncCompletion
         public void run()
         {
             List <Message> localList = new LinkedList<Message>();
+            long lastPurge = System.currentTimeMillis();
+            long timeNow = lastPurge;
             while(true)
             {
+                boolean doPurge = false;
                 synchronized(list)
                 {
+                    
                     while(list.isEmpty())
                     {
                         try
                         {
-                            list.wait();
+                            list.wait(60*1000);
+                            // purge every 5 minutes.
+                            timeNow = System.currentTimeMillis();
+                            if(timeNow - lastPurge>1000*300)
+                            {
+                                doPurge = true;
+                                lastPurge = timeNow;
+                                break;
+                            }
                         } catch(Exception ign) {}
                     }
+
                     localList.clear();
                     localList.addAll(list);
                     list.removeAll(list);
                 }
 
+                if(doPurge)
+                {
+                    synchronized(list)
+                    {
+                        log.info("Doing purge. Map.size="+map.size());
+
+                        for(Iterator <String>itt=map.keySet().iterator();
+                            itt.hasNext();)
+                        {
+                            String address = itt.next();
+                            AsyncRequest request = map.get(address);
+                            long lastSeenTime = mc.getLastSeenTime(address);
+                            // if we haven't seen them for 5 minutes, remove listener.
+                            if(timeNow-lastSeenTime>300*1000)
+                            {
+                                map.remove(address);
+                                log.info("Purged " + address + ". Inactive for " +
+                                (timeNow-lastSeenTime));
+                                try { request.ac.complete(); } catch(Exception ign) {}
+                            }
+                        }
+                    }
+                }
+                
                 for(Iterator <Message> itt=localList.iterator();
                     itt.hasNext();)
                 {
