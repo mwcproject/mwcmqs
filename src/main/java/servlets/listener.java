@@ -43,7 +43,7 @@ public class listener extends HttpServlet
             }
             
             System.out.println("listenerTime="+listenerTime);
-            if(!acomp.isMostRecentAndSet(address, listenerTime))
+            if(!acomp.isMostRecentAndSet(address, listenerTime, acomp))
             {
                 // a newer client has logged in
                 // tell this client to exit.

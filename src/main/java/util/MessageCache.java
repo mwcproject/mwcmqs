@@ -199,7 +199,9 @@ public class MessageCache
         }
     }
     
-    public synchronized boolean isMostRecentAndSet(String address, long listenerTime)
+    public synchronized boolean isMostRecentAndSet(String address,
+                                                   long listenerTime,
+                                                   AsyncCompletion acomp)
     {
         Entry entry = cache.get(address);
         if(entry == null)
@@ -211,6 +213,8 @@ public class MessageCache
             entry.startTime = listenerTime;
             
             // also wakeup the other connection to disconnect immediately.
+            acomp.closeConnection(address);
+            
             return true;
         }
         

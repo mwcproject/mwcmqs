@@ -210,9 +210,9 @@ public class AsyncCompletion
         }
     }
 
-    public boolean isMostRecentAndSet(String address, long listenerTime)
+    public boolean isMostRecentAndSet(String address, long listenerTime, AsyncCompletion acomp)
     {
-        return mc.isMostRecentAndSet(address, listenerTime);
+        return mc.isMostRecentAndSet(address, listenerTime, acomp);
     }
 
 
