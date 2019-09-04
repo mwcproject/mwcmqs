@@ -66,7 +66,6 @@ public class AsyncCompletion
                                 String address = itt.next();
                                 AsyncRequest request = map.get(address);
                                 long lastSeenTime = mc.getLastSeenTime(address);
-                                mc.getAndRemove(address); // clear messages
                                 // if we haven't seen them for 5 minutes, remove listener.
                                 if(timeNow-lastSeenTime>300*1000)
                                 {
