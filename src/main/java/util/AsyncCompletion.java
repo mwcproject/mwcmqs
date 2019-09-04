@@ -167,7 +167,7 @@ public class AsyncCompletion
     
     public void add(AsyncRequest req)
     {
-        mc.setLastSeenTime(req.address, System.currentTimeMillis());
+        mc.setLastSeenTime(req.address, req.startTime);
 
         if(req.delCount>0)
             mc.removeTo(req.address, req.delCount);
