@@ -18,6 +18,7 @@ public class MessageCache
         {
             messages = new LinkedList<Message>();
             lastSeenTime = System.currentTimeMillis();
+            this.startTime = startTime;
         }
         List <Message> messages;
         long lastSeenTime = -1;
@@ -212,8 +213,11 @@ public class MessageCache
             // now we need to set it to stay valid.
             entry.startTime = listenerTime;
             
-            // also wakeup the other connection to disconnect immediately.
-            acomp.closeConnection(address);
+            // also wakeup the other connection to disconnect immediately
+            // but only iff it's not us. If listenerTime = entry.startTime
+            // the request came from us.
+            if(listenerTime > entry.startTime)
+                acomp.closeConnection(address);
             
             return true;
         }
