@@ -61,72 +61,87 @@ public class AsyncCompletion
                         for(Iterator <String>itt=map.keySet().iterator();
                             itt.hasNext();)
                         {
-                            String address = itt.next();
-                            AsyncRequest request = map.get(address);
-                            long lastSeenTime = mc.getLastSeenTime(address);
-                            // if we haven't seen them for 5 minutes, remove listener.
-                            if(timeNow-lastSeenTime>300*1000)
-                            {
-                                map.remove(address);
-                                log.info("Purged " + address + ". Inactive for " +
-                                (timeNow-lastSeenTime));
-                                try { request.ac.complete(); } catch(Exception ign) {}
-                            }
-                        }
-                    }
-                }
-                
-                for(Iterator <Message> itt=localList.iterator();
-                    itt.hasNext();)
-                {
-                    Message message = itt.next();
-                    log.info("Processing message: " + message);
-                    AsyncRequest request = null;
-
-                    synchronized(list)
-                    {
-                        request = map.get(message.address);
-                    }
-
-                    if(request != null)
-                    {
-                        synchronized(request)
-                        {
                             try
                             {
-                                synchronized(list)
+                                String address = itt.next();
+                                AsyncRequest request = map.get(address);
+                                long lastSeenTime = mc.getLastSeenTime(address);
+                                mc.getAndRemove(address); // clear messages
+                                // if we haven't seen them for 5 minutes, remove listener.
+                                if(timeNow-lastSeenTime>300*1000)
                                 {
-                                    map.remove(message.address);
+                                    itt.remove();
+                                    log.info("Purged " + address + ". Inactive for " +
+                                            (timeNow-lastSeenTime));
+                                    try { request.ac.complete(); } catch(Exception ign) {}
                                 }
-
-                                if(request.delCount>=0)
-                                    mc.add(request.address, message.message, request.startTime);
-                                
-                                request.os.write(("message: " + message.message + "\n").getBytes());
-                                log.info("Returning: " + message.message);
-                                request.os.flush();
-
                             }
                             catch(Exception err)
                             {
-                                log.log(Level.SEVERE,
-                                        "AsyncCompletion.ProcessThread" +
-                                                " generated exception",
-                                                err);
-                            }
-                            finally
-                            {
-                                // we complete no matter what.
-                                try { request.ac.complete(); } catch(Exception err) {}
+                                log.log(Level.SEVERE, "Purge generated exception", err);
                             }
                         }
+                        log.info("Purge complete!");
                     }
-                    else
+                }
+
+                for(Iterator <Message> itt=localList.iterator();
+                        itt.hasNext();)
+                {
+                    try
                     {
-                        log.info("address " + message.address + " not connected now.");
-                        // we use 0 start time because we don't know what the
-                        // listener's start time will be, but will be great than 0.
-                        mc.add(message.address, message.message, 0);
+                        Message message = itt.next();
+                        log.info("Processing message: " + message);
+                        AsyncRequest request = null;
+
+                        synchronized(list)
+                        {
+                            request = map.get(message.address);
+                        }
+
+                        if(request != null)
+                        {
+                            synchronized(request)
+                            {
+                                try
+                                {
+                                    synchronized(list)
+                                    {
+                                        map.remove(message.address);
+                                    }
+
+                                    if(request.delCount>=0)
+                                        mc.add(request.address, message.message, request.startTime);
+
+                                    request.os.write(("message: " + message.message + "\n").getBytes());
+                                    log.info("Returning: " + message.message);
+                                    request.os.flush();
+
+                                }
+                                catch(Exception err)
+                                {
+                                    log.log(Level.SEVERE,
+                                            "AsyncCompletion.ProcessThread" +
+                                                    " generated exception",
+                                                    err);
+                                }
+                                finally
+                                {
+                                    // we complete no matter what.
+                                    try { request.ac.complete(); } catch(Exception err) {}
+                                }
+                            }
+                        }
+                        else
+                        {
+                            log.info("address " + message.address + " not connected now.");
+                            // we use 0 start time because we don't know what the
+                            // listener's start time will be, but will be great than 0.
+                            mc.add(message.address, message.message, 0);
+                        }
+                    } catch(Exception err)
+                    {
+                        log.log(Level.SEVERE, "Message processing generated exception", err);
                     }
                 }
             }
