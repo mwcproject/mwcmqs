@@ -209,6 +209,8 @@ public class MessageCache
         {
             // now we need to set it to stay valid.
             entry.startTime = listenerTime;
+            
+            // also wakeup the other connection to disconnect immediately.
             return true;
         }
         

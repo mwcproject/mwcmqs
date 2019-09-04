@@ -1,7 +1,6 @@
 package servlets;
 
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import util.AsyncCompletion;
 import util.AsyncRequest;
-import util.Message;
 
 public class listener extends HttpServlet
 {
