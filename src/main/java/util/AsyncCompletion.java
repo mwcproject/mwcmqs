@@ -57,9 +57,6 @@ public class AsyncCompletion
                         {
                             try
                             {
-                                request.os.write(("message: " + message.message + "\n").getBytes());
-                                log.info("Returning: " + message.message);
-                                request.os.flush();
                                 synchronized(list)
                                 {
                                     map.remove(message.address);
@@ -67,6 +64,11 @@ public class AsyncCompletion
 
                                 if(request.delCount>=0)
                                     mc.add(request.address, message.message, request.startTime);
+                                
+                                request.os.write(("message: " + message.message + "\n").getBytes());
+                                log.info("Returning: " + message.message);
+                                request.os.flush();
+
                             }
                             catch(Exception err)
                             {
@@ -78,7 +80,7 @@ public class AsyncCompletion
                             finally
                             {
                                 // we complete no matter what.
-                                request.ac.complete();
+                                try { request.ac.complete(); } catch(Exception err) {}
                             }
                         }
                     }
@@ -110,13 +112,14 @@ public class AsyncCompletion
         {
             try
             {
-                request.os.write(("message: " + message + "\n").getBytes());
-                log.info("Returning: " + message);
-                request.os.flush();
                 synchronized(list)
                 {
                     map.remove(address);
                 }
+
+                log.info("Returning: " + message);
+                request.os.write(("message: " + message + "\n").getBytes());
+                request.os.flush();
 
             }
             catch(Exception err)
@@ -129,7 +132,7 @@ public class AsyncCompletion
             finally
             {
                 // we complete no matter what.
-                request.ac.complete();
+                try { request.ac.complete(); } catch(Exception ign) {}
             }
         }
     }
