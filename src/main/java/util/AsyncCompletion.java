@@ -5,12 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
+
 
 public class AsyncCompletion
 {
-    private static Logger log = Logger.getLogger("mwcmq2");
+    private static Logger log = Logger.getLogger(AsyncCompletion.class);
 
     private class ProcessThread extends Thread
     {
@@ -54,10 +55,10 @@ public class AsyncCompletion
 
                 if(doPurge)
                 {
+                    log.info("Doing purge. Map.size="+map.size());
+                    int purgeCount = 0;
                     synchronized(list)
                     {
-                        log.info("Doing purge. Map.size="+map.size());
-
                         for(Iterator <String>itt=map.keySet().iterator();
                             itt.hasNext();)
                         {
@@ -70,18 +71,19 @@ public class AsyncCompletion
                                 if(timeNow-lastSeenTime>300*1000)
                                 {
                                     itt.remove();
-                                    log.info("Purged " + address + ". Inactive for " +
-                                            (timeNow-lastSeenTime));
+                                    purgeCount++;
+
                                     try { request.ac.complete(); } catch(Exception ign) {}
                                 }
                             }
                             catch(Exception err)
                             {
-                                log.log(Level.SEVERE, "Purge generated exception", err);
+                                log.error("Purge generated exception", err);
                             }
                         }
-                        log.info("Purge complete!");
                     }
+                    log.info("Purge complete! Removed" + purgeCount);
+
                 }
 
                 for(Iterator <Message> itt=localList.iterator();
@@ -90,7 +92,6 @@ public class AsyncCompletion
                     try
                     {
                         Message message = itt.next();
-                        log.info("Processing message: " + message);
                         AsyncRequest request = null;
 
                         synchronized(list)
@@ -113,13 +114,12 @@ public class AsyncCompletion
                                         mc.add(request.address, message.message, request.startTime);
 
                                     request.os.write(("message: " + message.message + "\n").getBytes());
-                                    log.info("Returning: " + message.message);
                                     request.os.flush();
 
                                 }
                                 catch(Exception err)
                                 {
-                                    log.log(Level.SEVERE,
+                                    log.error(
                                             "AsyncCompletion.ProcessThread" +
                                                     " generated exception",
                                                     err);
@@ -133,14 +133,13 @@ public class AsyncCompletion
                         }
                         else
                         {
-                            log.info("address " + message.address + " not connected now.");
                             // we use 0 start time because we don't know what the
                             // listener's start time will be, but will be great than 0.
                             mc.add(message.address, message.message, 0);
                         }
                     } catch(Exception err)
                     {
-                        log.log(Level.SEVERE, "Message processing generated exception", err);
+                        log.error("Message processing generated exception", err);
                     }
                 }
             }
@@ -168,14 +167,13 @@ public class AsyncCompletion
                     map.remove(address);
                 }
 
-                log.info("Returning: " + message);
                 request.os.write(("message: " + message + "\n").getBytes());
                 request.os.flush();
 
             }
             catch(Exception err)
             {
-                log.log(Level.SEVERE,
+                log.error(
                         "AsyncCompletion.ProcessThread" +
                                 " generated exception",
                                 err);
@@ -253,7 +251,7 @@ public class AsyncCompletion
             }
             catch(Exception err)
             {
-                log.log(Level.SEVERE,
+                log.error(
                         "AsyncCompletion.add generated exception",
                         err);
             }

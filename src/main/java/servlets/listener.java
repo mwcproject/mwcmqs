@@ -1,13 +1,13 @@
 package servlets;
 
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import util.AsyncCompletion;
 import util.AsyncRequest;
@@ -15,7 +15,8 @@ import util.AsyncRequest;
 public class listener extends HttpServlet
 {
     public static final long serialVersionUID = 1L;
-    private static Logger log = Logger.getLogger("mwcmq2");
+    private static Logger log = Logger.getLogger(listener.class);
+    
 
     public static AsyncCompletion acomp = null;
     
@@ -26,7 +27,7 @@ public class listener extends HttpServlet
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)
     {
-        log.info("got a request: " + req);
+        log.info("listener: " + req);
         try
         {
             res.setContentType("text/html");//setting the content type
@@ -77,7 +78,7 @@ public class listener extends HttpServlet
         }
         catch(Exception err)
         {
-            log.log(Level.SEVERE, "listener servet generated exception", err);
+            log.error("listener servet generated exception", err);
         }
     }
 }

@@ -5,12 +5,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 public class MessageCache
 {
-    private static Logger log = Logger.getLogger("mwcmqs2");
+    private static Logger log = Logger.getLogger(MessageCache.class);
 
     private class Entry
     {
@@ -119,7 +119,8 @@ public class MessageCache
                 }
                 catch(Exception err)
                 {
-                    log.log(Level.SEVERE, "Cleaner generated exception", err);
+                    log.error("Cleaner generated exception", err);
+                    
                 }
             }
 

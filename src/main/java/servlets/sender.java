@@ -9,14 +9,14 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import util.AsyncCompletion;
 
@@ -88,7 +88,6 @@ public class sender extends HttpServlet
                     String line = null;
                     AsyncContext ac = hfr.ac;
                     
-                    log.info("Async http request to " + hfr.url);
                     try {
 
                         URL obj = new URL(hfr.url);
@@ -147,11 +146,11 @@ public class sender extends HttpServlet
         new HttpForwarder().start();
     }
 
-    private static Logger log = Logger.getLogger("mwcmq2");
+    private static Logger log = Logger.getLogger(sender.class);
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
-        log.info("Got a request: " + req.getRequestURI());
+        log.info("sender: " + req);
 
         StringBuilder jb = new StringBuilder();
         String line = null;
@@ -219,7 +218,7 @@ public class sender extends HttpServlet
         }
         catch (Exception err)
         {
-            log.log(Level.SEVERE, "sender servet generated exception", err);
+            log.error("sender servet generated exception", err);
         }
         finally
         {
