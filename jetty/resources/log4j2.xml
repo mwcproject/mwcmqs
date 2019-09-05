@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="Jetty" >
+
+  <Appenders>
+  </Appenders>
+  <Loggers>
+    <Root level="error">
+      <AppenderRef ref="file"/>
+    </Root>
+  </Loggers>
+
+  <Appenders>
+    <RollingFile name="file" 
+      fileName="./logs/jetty.log" 
+      filePattern="./logs/jetty.log.gz" 
+      ignoreExceptions="false">
+      <PatternLayout>
+        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+      </PatternLayout>
+      <SizeBasedTriggeringPolicy size="10MB"/>
+      <DefaultRolloverStrategy max="10"/>
+    </RollingFile>
+  </Appenders>
+
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="file"/>
+    </Root>
+  </Loggers>
+
+</Configuration>
+
