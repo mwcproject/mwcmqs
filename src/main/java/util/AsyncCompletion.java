@@ -82,7 +82,7 @@ public class AsyncCompletion
                             }
                         }
                     }
-                    log.info("Purge complete! Removed" + purgeCount);
+                    log.info("Purge complete! Removed " + purgeCount + ".");
 
                 }
 
