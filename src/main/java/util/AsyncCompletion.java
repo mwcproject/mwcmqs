@@ -120,6 +120,14 @@ public class AsyncCompletion
                                                 request.startTime,
                                                 true);
 
+                                    if(request.delTo == null)
+                                    {
+                                        // we have to adjust to the old format
+                                            message.message =
+                                                    message.message.substring(
+                                                    message.message.indexOf(";")+1);
+                                    }
+                                    
                                     request.os.write(("message: " +
                                               message.message + "\n").getBytes());
                                     request.os.flush();
@@ -274,6 +282,12 @@ public class AsyncCompletion
                 for(Iterator<Message>itt=messages.iterator(); itt.hasNext();)
                 {
                     Message next = itt.next();
+                    if(req.delTo == null)
+                    {
+                        // we have to adjust to the old format
+                            next.message =
+                                    next.message.substring(next.message.indexOf(";")+1);
+                    }
                     req.os.write(("message[" + next.message.length() + "]: " +
                             next.message + "\n").getBytes());
                 }

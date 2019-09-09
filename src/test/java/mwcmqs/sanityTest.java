@@ -109,16 +109,14 @@ public class sanityTest
         HttpURLConnection con = null;
         BufferedReader buf = null;
         long startTime = System.currentTimeMillis()-1000;
-        int delcount = 0;
-        
-        
+
         try
         {
 
             URL obj = new URL(server +
                     "listener?time_now="+
                     startTime+
-                    "&delcount=" + delcount+
+                    "&delTo=nil" +
                     "&address=" +
                     address);
 
@@ -135,7 +133,6 @@ public class sanityTest
 
             String line;
 
-            delcount = 0;
             int count = 0;
             while((line=buf.readLine()) != null)
             {
