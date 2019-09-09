@@ -14,6 +14,13 @@ public class MessageCache
 
     private class Entry
     {
+        Entry(long startTime, long lastSeenTime)
+        {
+            messages = new LinkedList<Message>();
+            this.lastSeenTime = lastSeenTime;
+            this.startTime = startTime;
+        }
+
         Entry(long startTime)
         {
             messages = new LinkedList<Message>();
@@ -165,12 +172,15 @@ public class MessageCache
         return entry.lastSeenTime;
     }
 
-    public synchronized void add(String address, String message, long startTime)
+    public synchronized void add(String address, String message, long startTime, boolean connected)
     {
         Entry entry = cache.get(address);
         if(entry == null)
         {
-            entry = new Entry(startTime);
+            if(connected)
+                entry = new Entry(startTime, System.currentTimeMillis());
+            else
+                entry = new Entry(startTime, -1);
             cache.put(address, entry);
         }
 
@@ -199,10 +209,39 @@ public class MessageCache
         return ret;
     }
     
+    public synchronized void removeTo(String address, String delTo)
+    {
+        // if this is set to nil, it means don't delete anything.
+        if("nil".equals(delTo))
+            return;
+
+        Entry entry = cache.get(address);
+        if(entry == null || entry.messages == null)
+            return;
+        
+        int size = entry.messages.size();
+        int delCount = 0;
+        
+        for(int i=0; i<size; i++)
+        {
+            Message msg = entry.messages.get(i);
+            if(msg.message.startsWith(delTo+";"))
+            {
+                delCount = i+1;
+                break;
+            }
+        }
+        
+        for(int i=0; i<delCount; i++)
+        {
+            entry.messages.remove(0);
+        }
+    }
+    
     public synchronized void removeTo(String address, int index)
     {
         Entry entry = cache.get(address);
-        if(entry == null)
+        if(entry == null || entry.messages == null)
             return;
         
         for(int i=0; i<index; i++)
@@ -243,12 +282,12 @@ public class MessageCache
     {
         MessageCache cm = new MessageCache(3);
         
-        cm.add("1", "a", 0L);
+        cm.add("1", "a", 0L, true);
         
-        cm.add("2", "b", 0L);
-        cm.add("2", "hihi", 0L);
-        cm.add("3", "c", 0L);
-        cm.add("4", "d", 0L);
+        cm.add("2", "b", 0L, true);
+        cm.add("2", "hihi", 0L, true);
+        cm.add("3", "c", 0L, true);
+        cm.add("4", "d", 0L, true);
         
         System.out.println("1="+cm.getAndRemove("1"));
         System.out.println("2="+cm.getAndRemove("2"));

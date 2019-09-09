@@ -1,5 +1,9 @@
 package util;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -110,10 +114,14 @@ public class AsyncCompletion
                                         map.remove(message.address);
                                     }
 
-                                    if(request.delCount>=0)
-                                        mc.add(request.address, message.message, request.startTime);
+                                    if(request.delCount>=0 || request.delTo != null)
+                                        mc.add(request.address,
+                                                message.message,
+                                                request.startTime,
+                                                true);
 
-                                    request.os.write(("message: " + message.message + "\n").getBytes());
+                                    request.os.write(("message: " +
+                                              message.message + "\n").getBytes());
                                     request.os.flush();
 
                                 }
@@ -135,7 +143,7 @@ public class AsyncCompletion
                         {
                             // we use 0 start time because we don't know what the
                             // listener's start time will be, but will be great than 0.
-                            mc.add(message.address, message.message, 0);
+                            mc.add(message.address, message.message, 0, false);
                         }
                     } catch(Exception err)
                     {
@@ -201,10 +209,13 @@ public class AsyncCompletion
     }
     
     public void send(String address, String message)
+    throws NoSuchAlgorithmException, IOException
     {
-        Message m = new Message(address,
-                                message,
-                                System.currentTimeMillis());
+        long timeNow = System.currentTimeMillis();
+        Message m = new Message(
+                              address,
+                              getMessageId(message, timeNow) + ";" + message,
+                              timeNow);
         synchronized(list)
         {
             list.add(m);
@@ -222,15 +233,34 @@ public class AsyncCompletion
         return mc.getLastSeenTime(address);
     }
     
+    private String getMessageId(String message, long timeNow)
+    throws IOException, NoSuchAlgorithmException
+    {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        return new String(
+                Base64.getEncoder().encode(
+                        md.digest(new String(timeNow+message).getBytes()))).
+                replace("=", "").replace("/", "").replace("+", "");
+    }
+
+    
     public void add(AsyncRequest req)
     {
         mc.setLastSeenTime(req.address, req.startTime);
 
-        if(req.delCount>0)
+        if(req.delTo != null)
+        {
+            // first we see if we're instructed to delete to a particular message
+            mc.removeTo(req.address, req.delTo);
+        }
+        else if(req.delCount>0)
+        {
+            // next we check for delCount
             mc.removeTo(req.address, req.delCount);
-        
+        }
+
         List <Message> messages = null;
-        if(req.delCount < 0)
+        if(req.delCount < 0 && req.delTo == null)
             messages = mc.getAndRemove(req.address);
         else
             messages = mc.getAll(req.address);

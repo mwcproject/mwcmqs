@@ -44,7 +44,10 @@ public class listener extends HttpServlet
                 // not specified
             }
             
-            if(!acomp.isMostRecentAndSet(address, listenerTime, acomp))
+            // note: we check current time because since they get time from us,
+            // anyone posting a higher time than us is being malicious.
+            if(!acomp.isMostRecentAndSet(address, listenerTime, acomp) ||
+               listenerTime > System.currentTimeMillis())
             {
                 // a newer client has logged in
                 // tell this client to exit.
@@ -68,11 +71,14 @@ public class listener extends HttpServlet
                     delCount = Integer.parseInt(req.getParameter("delcount"));
                 } catch(Exception err) {
                 }
+                
+                String delTo = req.getParameter("delTo");
 
                 acomp.add(new AsyncRequest(ac,
                         address,
                         res.getOutputStream(),
                         delCount,
+                        delTo,
                         listenerTime));
             }
         }

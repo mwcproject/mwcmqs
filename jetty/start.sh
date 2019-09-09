@@ -1,3 +1,4 @@
 #!/bin/sh
 
-./bin/jetty.sh start 
+cd "$(dirname "$0")"
+./bin/jetty.sh restart
