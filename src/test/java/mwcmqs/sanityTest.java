@@ -135,7 +135,6 @@ public class sanityTest
 
             String line;
 
-            System.out.println("Blocking for reads");
             delcount = 0;
             int count = 0;
             while((line=buf.readLine()) != null)
