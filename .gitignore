@@ -1,5 +1,5 @@
 jetty/logs/*
-jetty/jetty.start
+jetty/jetty.state
 jetty/jetty
 jetty/webapps/root/WEB-INF/lib/*
 jetty/webapps/root/WEB-INF/classes/*
