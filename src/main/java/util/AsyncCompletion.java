@@ -292,6 +292,8 @@ public class AsyncCompletion
                             next.message + "\n").getBytes());
                 }
                 req.os.flush();
+                req.ac.complete();
+
             }
             catch(Exception err)
             {
@@ -299,7 +301,22 @@ public class AsyncCompletion
                         "AsyncCompletion.add generated exception",
                         err);
             }
-            req.ac.complete();
+        }
+        else if(req.first)
+        {
+            // if it's the first request and nothings pending we
+            // send a dummy message right away.
+            try
+            {
+                req.os.write("message: mapmessage=nil".getBytes());
+                req.os.flush();
+                req.ac.complete();
+            } catch(Exception err)
+            {
+                log.error(
+                        "AsyncCompletion.add generated exception",
+                        err);
+            }
         }
         else
         {

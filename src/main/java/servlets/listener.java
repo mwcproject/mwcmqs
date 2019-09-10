@@ -74,12 +74,15 @@ public class listener extends HttpServlet
                 
                 String delTo = req.getParameter("delTo");
 
+                boolean first = "true".equalsIgnoreCase(req.getParameter("first"));
+                
                 acomp.add(new AsyncRequest(ac,
                         address,
                         res.getOutputStream(),
                         delCount,
                         delTo,
-                        listenerTime));
+                        listenerTime,
+                        first));
             }
         }
         catch(Exception err)

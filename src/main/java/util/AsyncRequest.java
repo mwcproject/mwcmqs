@@ -11,13 +11,15 @@ public class AsyncRequest {
     public int delCount = -1;
     public long startTime = -1;
     public String delTo = null;
+    public boolean first = false;
 
     public AsyncRequest(AsyncContext ac,
                         String address,
                         OutputStream os,
                         int delCount,
                         String delTo,
-                        long startTime)
+                        long startTime,
+                        boolean first)
     {
         this.ac = ac;
         this.address = address;
@@ -25,5 +27,6 @@ public class AsyncRequest {
         this.delCount = delCount;
         this.startTime = startTime;
         this.delTo = delTo;
+        this.first = first;
     }
 }
