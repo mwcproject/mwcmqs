@@ -17,6 +17,11 @@ The prerequisites are java and mvn. Please install both before begining.
 - build project:
 
 ```# mvn install```
+
+Note: first time running tests will fail because you do not have the jar file created. To bypass this issue, first run:
+```# mvn install -DskipTests=true```
+On subsequent runs you can just use mvn install.
+
 - remove servlet jar (mvn installs a duplicate):
 
 ```# rm -rf jetty/webapps/root/WEB-INF/libs/javax*```
