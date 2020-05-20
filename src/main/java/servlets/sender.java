@@ -168,6 +168,8 @@ public class sender extends HttpServlet
             String address = req.getParameter("address");
             String message = jb.toString();
             
+            log.error("message="+message);
+            
             boolean is_target_domain = true;
             String target_domain = DEFAULT_MWCMQS_DOMAIN;
             if(address.indexOf("@")>=0) {

@@ -28,6 +28,7 @@ public class listener extends HttpServlet
     public void doGet(HttpServletRequest req, HttpServletResponse res)
     {
         log.info("listener: " + req);
+
         try
         {
             res.setContentType("text/html");//setting the content type
