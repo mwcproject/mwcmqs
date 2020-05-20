@@ -29,7 +29,7 @@ public class sender extends HttpServlet
     public static final String DEFAULT_MWCMQS_DOMAIN = "mqs.mwc.mw";
     
     private AsyncCompletion acomp = null;
-    private String domain = null;
+    public static String domain = null;
     
     private class HttpForwardRequest 
     {

@@ -1,7 +1,6 @@
 package servlets;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -21,6 +20,7 @@ public class httpsend extends HttpServlet {
      */
     private static final long serialVersionUID = 1L;
     
+    private String domain = sender.domain;
     private AsyncCompletion acomp = null;
     
     private static Logger log = Logger.getLogger(httpsend.class);
@@ -33,6 +33,12 @@ public class httpsend extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
         String address = req.getParameter("address");
+        
+        if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
+        {
+            address += "@" + domain;
+        }
+        
         if(address != null)
         {
             int end = address.indexOf('/');
