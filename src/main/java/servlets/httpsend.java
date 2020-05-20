@@ -100,7 +100,6 @@ public class httpsend extends HttpServlet {
             e.printStackTrace();
         }
         finally {
-            try { pw.close(); } catch(Exception ign) {}
             try { buf.close(); } catch(Exception ign) {}
         }
     }
