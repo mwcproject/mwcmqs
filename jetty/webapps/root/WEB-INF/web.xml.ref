@@ -33,6 +33,7 @@
     <servlet>
         <servlet-name>httpsend</servlet-name>
         <servlet-class>servlets.httpsend</servlet-class>
+	<async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
         <servlet-name>httpsend</servlet-name>
