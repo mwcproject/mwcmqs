@@ -30,5 +30,13 @@
         <servlet-name>sender</servlet-name>
         <url-pattern>/sender</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>httpsend</servlet-name>
+        <servlet-class>servlets.httpsend</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>httpsend</servlet-name>
+        <url-pattern>/httpsend</url-pattern>
+    </servlet-mapping>:
 </web-app>
 
