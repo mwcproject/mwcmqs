@@ -39,6 +39,10 @@
     <servlet-mapping>
         <servlet-name>httpsend</servlet-name>
         <url-pattern>/httpsend</url-pattern>
+        <init-param>
+            <param-name>mwc713Script</param-name>
+            <param-value>../scripts/mwc713.sh</param-value>
+        </init-param>
     </servlet-mapping>:
 </web-app>
 

@@ -34,7 +34,6 @@ public class listener extends HttpServlet
             res.setContentType("text/html");//setting the content type
 
             String address = req.getParameter("address");
-log.error("listening to " + address);
             acomp.updateLastSeenTime(address);
             
             long listenerTime = 0;

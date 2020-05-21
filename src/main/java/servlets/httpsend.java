@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import util.AsyncCompletion;
+import util.MiscUtils;
 
 public class httpsend extends HttpServlet {
     /**
@@ -21,22 +22,22 @@ public class httpsend extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private AsyncCompletion acomp = null;
+    private String mwc713Script = null;
     
     private static Logger log = Logger.getLogger(httpsend.class);
     
     public void init()
     {
         acomp = listener.acomp;
+        mwc713Script = getServletConfig().getInitParameter("mwc713Script");
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
-	String domain = sender.domain;
+        String domain = sender.domain;
         String address = req.getParameter("address");
-	String address_pre = address;
-       log.error("default = " + sender.DEFAULT_MWCMQS_DOMAIN);
-      log.error("domain = " + domain); 
-      log.error("address pre = " + address);
+        String address_pre = address;
+
         if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
         {
             address += "@" + domain;
@@ -49,15 +50,12 @@ public class httpsend extends HttpServlet {
                 address = address.substring(0, end);
         }
 
-	if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
-        {
-		log.error("in this block");
+        if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
             address += "@" + domain;
-        }
 
 
         PrintWriter pw = null;
-        BufferedReader buf = null;
+        BufferedReader buf = null, buf2 = null;
         try {
             buf = new BufferedReader(new InputStreamReader(req.getInputStream()));
             String line;
@@ -103,20 +101,35 @@ public class httpsend extends HttpServlet {
                         "}");
                 pw.flush();
             } else {
-                log.error("got a non check");
-                
                 // we pass to another thread so start async
                 AsyncContext ac = req.startAsync();
                 ac.setTimeout(60*1000);
-log.error("Sending to " + address);                
-                acomp.send(address, sb.toString());
+                
+                // get encrypted slate
+                ProcessBuilder pb = new ProcessBuilder(
+                        mwc713Script,
+                        "'" + sb.toString() + "'",
+                        address_pre);
 
+                boolean success = false;
+
+                Process proc = pb.start();
+                buf2 = new BufferedReader(
+                        new InputStreamReader(proc.getInputStream()));
+
+                while((line=buf2.readLine()) != null)
+                {
+                    System.out.println("line="+line);
+                }
+                
+                acomp.send(address, sb.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         finally {
             try { buf.close(); } catch(Exception ign) {}
+            try { buf2.close(); } catch(Exception ign) {}
         }
     }
 }
