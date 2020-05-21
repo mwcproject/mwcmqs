@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import util.AsyncCompletion;
@@ -107,12 +108,17 @@ public class httpsend extends HttpServlet {
                 // get encrypted slate
 		log.error("about to get slate: "+mwc713Script);
 
-log.error("slate="+sb.toString());
+log.error("json="+sb.toString());
 log.error("address="+address_pre);
-
+                obj = new JSONObject(sb.toString());
+                JSONArray params = obj.getJSONArray("params");
+                String slate = params.get(0).toString();
+                
+                log.error("slate="+slate);
+                
                 ProcessBuilder pb = new ProcessBuilder(
                         mwc713Script,
-                        "'" + sb.toString() + "'",
+                        "'" + slate + "'",
                         address_pre);
 
                 Process proc = pb.start();
