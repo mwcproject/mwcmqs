@@ -23,6 +23,7 @@ public class listener extends HttpServlet
 
     public static AsyncCompletion acomp = null;
     private String mwc713Script = null;
+    public static String httpSendAddress = null;
 
     
     public void init()
@@ -49,6 +50,7 @@ log.error("Init listener");
                 if(line.startsWith("Your mwcmqs address: "))
                     address = line.substring(line.indexOf(":") + 2);
             }
+            httpSendAddress = address;
             log.error("Address="+address);
         } catch(Exception err)
         {

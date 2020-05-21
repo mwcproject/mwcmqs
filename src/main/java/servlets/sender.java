@@ -187,10 +187,19 @@ public class sender extends HttpServlet
             {
                 long lastSeen = System.currentTimeMillis() -
                         acomp.getLastSeenTime(address);
-                acomp.send(address, message);
-                pw = res.getWriter();
-                //writing lastSeen in the stream
-                pw.print("lastSeen: "+lastSeen);
+                
+                if(address.equals(listener.httpSendAddress))
+                {
+                    log.error("Got the special case");
+                    pw = res.getWriter();
+                    //writing lastSeen in the stream as 0 because it's us.
+                    pw.print("lastSeen: 0");
+                } else {
+                    acomp.send(address, message);
+                    pw = res.getWriter();
+                    //writing lastSeen in the stream
+                    pw.print("lastSeen: "+lastSeen);
+                }
             }
             else
             {
