@@ -110,15 +110,13 @@ public class httpsend extends HttpServlet {
                         "'" + sb.toString() + "'",
                         address_pre);
 
-                boolean success = false;
-
                 Process proc = pb.start();
                 buf2 = new BufferedReader(
                         new InputStreamReader(proc.getInputStream()));
 
                 while((line=buf2.readLine()) != null)
                 {
-                    System.out.println("line="+line);
+                    log.error("line="+line);
                 }
                 
                 acomp.send(address, sb.toString());
