@@ -52,6 +52,8 @@ public class httpsend extends HttpServlet {
                 mwc713DecryptScript,
                 "'" + message + "'");
 
+        String slate = null;
+
         try
         {
             Process proc = pb.start();
@@ -59,7 +61,6 @@ public class httpsend extends HttpServlet {
                     new InputStreamReader(proc.getInputStream()));
 
 
-            String slate = null;
             while((line=buf.readLine()) != null)
             {
                 log.error("decryptline="+line);
@@ -95,7 +96,8 @@ public class httpsend extends HttpServlet {
             log.error("Couldn't find an object for address: " + tx_id);
             return;
         }
-
+        arh.pw.println(slate);
+        arh.pw.flush();
         arh.ac.complete();
     }
     
