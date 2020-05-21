@@ -43,6 +43,7 @@ public class httpsend extends HttpServlet {
         AsyncResponseHolder arh = null;
         BufferedReader buf = null;
         String line;
+        String tx_id = null;
 
         log.error("message="+message);
 
@@ -58,10 +59,21 @@ public class httpsend extends HttpServlet {
                     new InputStreamReader(proc.getInputStream()));
 
 
+            String slate = null;
             while((line=buf.readLine()) != null)
             {
                 log.error("decryptline="+line);
+                if(line.startsWith("slate='"))
+                {
+                    slate = line.substring(7);
+                    slate = slate.substring(0, slate.indexOf('\''));
+                }
             }
+            
+            System.out.println("Slate="+slate);
+            
+            JSONObject obj = new JSONObject(slate);
+            tx_id = obj.getString("id");
         }
         catch(Exception err)
         {
@@ -75,12 +87,12 @@ public class httpsend extends HttpServlet {
         
         synchronized(responseLock)
         {
-            arh = responses.get(address);
+            arh = responses.get(tx_id);
         }
         
         if(arh == null)
         {
-            log.error("Couldn't find an object for address: " + address);
+            log.error("Couldn't find an object for address: " + tx_id);
             return;
         }
 
@@ -169,6 +181,7 @@ public class httpsend extends HttpServlet {
                 // get encrypted slate
 
                 obj = new JSONObject(sb.toString());
+                String tx_id = obj.getString("id");
                 JSONArray params = obj.getJSONArray("params");
                 String slate = params.get(0).toString();
                 
@@ -206,7 +219,7 @@ public class httpsend extends HttpServlet {
 
                 synchronized(responseLock)
                 {
-                    responses.put(address, arh);
+                    responses.put(tx_id, arh);
                 }
                 
                 acomp.send(address, encrypted_slate);
