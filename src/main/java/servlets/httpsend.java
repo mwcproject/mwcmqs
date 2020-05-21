@@ -44,6 +44,35 @@ public class httpsend extends HttpServlet {
         BufferedReader buf = null;
         String line;
 
+        log.error("message="+message);
+
+        
+        ProcessBuilder pb = new ProcessBuilder(
+                mwc713DecryptScript,
+                "'" + message + "'");
+
+        try
+        {
+            Process proc = pb.start();
+            buf = new BufferedReader(
+                    new InputStreamReader(proc.getInputStream()));
+
+
+            while((line=buf.readLine()) != null)
+            {
+                log.error("decryptline="+line);
+            }
+        }
+        catch(Exception err)
+        {
+            log.error("exception encrypting slate", err);
+        }
+        finally
+        {
+            try { buf.close(); } catch(Exception ign) {}
+        }
+
+        
         synchronized(responseLock)
         {
             arh = responses.get(address);
@@ -54,33 +83,7 @@ public class httpsend extends HttpServlet {
             log.error("Couldn't find an object for address: " + address);
             return;
         }
-        log.error("message="+message);
 
-        ProcessBuilder pb = new ProcessBuilder(
-                mwc713DecryptScript,
-                "'" + message + "'");
-
-        try
-        {
-        Process proc = pb.start();
-        buf = new BufferedReader(
-                new InputStreamReader(proc.getInputStream()));
-
-        
-        while((line=buf.readLine()) != null)
-        {
-            log.error("decryptline="+line);
-        }
-        }
-        catch(Exception err)
-        {
-            log.error("exception encrypting slate", err);
-        }
-        finally
-        {
-            try { buf.close(); } catch(Exception ign) {}
-        }
-        
         arh.ac.complete();
     }
     
