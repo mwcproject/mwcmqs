@@ -20,7 +20,6 @@ public class httpsend extends HttpServlet {
      */
     private static final long serialVersionUID = 1L;
     
-    private String domain = sender.domain;
     private AsyncCompletion acomp = null;
     
     private static Logger log = Logger.getLogger(httpsend.class);
@@ -32,8 +31,12 @@ public class httpsend extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
+	String domain = sender.domain;
         String address = req.getParameter("address");
-        
+	String address_pre = address;
+       log.error("default = " + sender.DEFAULT_MWCMQS_DOMAIN);
+      log.error("domain = " + domain); 
+      log.error("address pre = " + address);
         if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
         {
             address += "@" + domain;
@@ -46,6 +49,13 @@ public class httpsend extends HttpServlet {
                 address = address.substring(0, end);
         }
 
+	if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
+        {
+		log.error("in this block");
+            address += "@" + domain;
+        }
+
+
         PrintWriter pw = null;
         BufferedReader buf = null;
         try {
@@ -55,14 +65,14 @@ public class httpsend extends HttpServlet {
 
             pw = new PrintWriter(res.getOutputStream());
 
-            if(address != null && address.contains("@"))
+            if(address_pre != null && address_pre.contains("@"))
             {
                 pw.println("{\n" + 
                         "  \"id\": 1,\n" + 
                         "  \"jsonrpc\": \"2.0\",\n" + 
                         "  \"result\": {\n" + 
                         "    \"Err\": {\n" + 
-                        "      \"AddressFormatError\": \"Only local addresses supported.\",\n" + 
+                        "      \"AddressFormatError\": \"Only local addresses supported.\"\n" + 
                         "    }\n" + 
                         "  }\n" +
                         "}");
@@ -98,7 +108,7 @@ public class httpsend extends HttpServlet {
                 // we pass to another thread so start async
                 AsyncContext ac = req.startAsync();
                 ac.setTimeout(60*1000);
-                
+log.error("Sending to " + address);                
                 acomp.send(address, sb.toString());
 
             }

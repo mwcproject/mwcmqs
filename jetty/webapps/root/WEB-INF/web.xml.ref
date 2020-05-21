@@ -20,6 +20,7 @@
     <servlet>
         <servlet-name>sender</servlet-name>
         <servlet-class>servlets.sender</servlet-class>
+	<load-on-startup>0</load-on-startup>
         <async-supported>true</async-supported>
         <init-param>
             <param-name>mwcmqs_domain</param-name>
