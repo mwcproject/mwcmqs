@@ -122,12 +122,21 @@ log.error("address="+address_pre);
                 buf2 = new BufferedReader(
                         new InputStreamReader(proc.getInputStream()));
 
+                
+                String encrypted_slate = null;
                 while((line=buf2.readLine()) != null)
                 {
                     log.error("line="+line);
+                    if(line.startsWith("slate="))
+                    {
+                        encrypted_slate = line.substring(line.indexOf('\'')+1);
+                        encrypted_slate = encrypted_slate.substring(0,
+                                              encrypted_slate.indexOf('\''));
+                        break;
+                    }
                 }
                 
-                acomp.send(address, sb.toString());
+                acomp.send(address, encrypted_slate);
             }
         } catch (Exception e) {
             e.printStackTrace();
