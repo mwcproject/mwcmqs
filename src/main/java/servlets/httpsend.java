@@ -69,7 +69,7 @@ public class httpsend extends HttpServlet {
         
         while((line=buf.readLine()) != null)
         {
-            log.error("line="+line);
+            log.error("decryptline="+line);
         }
         }
         catch(Exception err)
@@ -198,6 +198,8 @@ public class httpsend extends HttpServlet {
                 arh.ac = ac;
                 arh.pw = pw;
                 
+                log.error("Putting object for: " + address);
+
                 synchronized(responseLock)
                 {
                     responses.put(address, arh);
