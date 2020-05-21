@@ -181,10 +181,11 @@ public class httpsend extends HttpServlet {
                 // get encrypted slate
 
                 obj = new JSONObject(sb.toString());
-                String tx_id = obj.getString("id");
                 JSONArray params = obj.getJSONArray("params");
-                String slate = params.get(0).toString();
-                
+                JSONObject slateObj = params.getJSONObject(0);
+                String slate = slateObj.toString();
+                String tx_id = slateObj.getString("id");
+
                 log.error("slate="+slate);
                 log.error("address_pre="+address_pre);
                 
