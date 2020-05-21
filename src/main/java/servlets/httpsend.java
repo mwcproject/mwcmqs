@@ -173,6 +173,7 @@ public class httpsend extends HttpServlet {
                 String slate = params.get(0).toString();
                 
                 log.error("slate="+slate);
+                log.error("address_pre="+address_pre);
                 
                 ProcessBuilder pb = new ProcessBuilder(
                         mwc713Script,
