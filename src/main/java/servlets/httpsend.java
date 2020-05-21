@@ -36,13 +36,7 @@ public class httpsend extends HttpServlet {
     {
         String domain = sender.domain;
         String address = req.getParameter("address");
-        String address_pre = address;
 
-        if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
-        {
-            address += "@" + domain;
-        }
-        
         if(address != null)
         {
             int end = address.indexOf('/');
@@ -50,6 +44,9 @@ public class httpsend extends HttpServlet {
                 address = address.substring(0, end);
         }
 
+        String address_pre = address;
+
+        
         if(!sender.DEFAULT_MWCMQS_DOMAIN.equals(domain))
             address += "@" + domain;
 
