@@ -44,6 +44,6 @@
     <servlet-mapping>
         <servlet-name>httpsend</servlet-name>
         <url-pattern>/httpsend</url-pattern>
-    </servlet-mapping>:
+    </servlet-mapping>
 </web-app>
 
