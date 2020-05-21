@@ -105,6 +105,11 @@ public class httpsend extends HttpServlet {
                 ac.setTimeout(60*1000);
                 
                 // get encrypted slate
+		log.error("about to get slate: "+mwc713Script);
+
+log.error("slate="+sb.toString());
+log.error("address="+address_pre);
+
                 ProcessBuilder pb = new ProcessBuilder(
                         mwc713Script,
                         "'" + sb.toString() + "'",
