@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import javax.servlet.AsyncContext;
@@ -19,10 +21,43 @@ public class listener extends HttpServlet
     
 
     public static AsyncCompletion acomp = null;
+    private String mwc713Script = null;
+
     
     public void init()
     {
+        String line;
+        BufferedReader buf = null;
         acomp = new AsyncCompletion();
+        mwc713Script = httpsend.mwc713Script;
+        
+        ProcessBuilder pb = new ProcessBuilder(
+                mwc713Script,
+                "''",
+                "");
+
+        try
+        {
+            Process proc = pb.start();
+            buf = new BufferedReader(
+                    new InputStreamReader(proc.getInputStream()));
+
+            String address = null;
+            while((line=buf.readLine()) != null)
+            {
+                if(line.startsWith("Your mwcmqs address: "))
+                    address = line.substring(line.indexOf(":") + 2);
+            }
+            log.error("Address="+address);
+        } catch(Exception err)
+        {
+            err.printStackTrace();
+        }
+        finally
+        {
+            try { buf.close(); } catch(Exception ign) {}
+        }
+        
     }
     
     public void doGet(HttpServletRequest req, HttpServletResponse res)

@@ -2,7 +2,7 @@
     <servlet>
         <servlet-name>listener</servlet-name>
         <servlet-class>servlets.listener</servlet-class>
-        <load-on-startup>0</load-on-startup>
+        <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -20,7 +20,7 @@
     <servlet>
         <servlet-name>sender</servlet-name>
         <servlet-class>servlets.sender</servlet-class>
-	<load-on-startup>0</load-on-startup>
+	<load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
         <init-param>
             <param-name>mwcmqs_domain</param-name>
@@ -34,15 +34,16 @@
     <servlet>
         <servlet-name>httpsend</servlet-name>
         <servlet-class>servlets.httpsend</servlet-class>
+	<load-on-startup>0</load_on_startup>
 	<async-supported>true</async-supported>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>httpsend</servlet-name>
-        <url-pattern>/httpsend</url-pattern>
         <init-param>
             <param-name>mwc713Script</param-name>
             <param-value>../scripts/mwc713.sh</param-value>
         </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>httpsend</servlet-name>
+        <url-pattern>/httpsend</url-pattern>
     </servlet-mapping>:
 </web-app>
 

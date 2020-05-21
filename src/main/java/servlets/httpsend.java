@@ -22,7 +22,7 @@ public class httpsend extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private AsyncCompletion acomp = null;
-    private String mwc713Script = null;
+    public static String mwc713Script = null;
     
     private static Logger log = Logger.getLogger(httpsend.class);
     
