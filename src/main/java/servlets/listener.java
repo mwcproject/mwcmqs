@@ -23,6 +23,7 @@ public class listener extends HttpServlet
 
     public static AsyncCompletion acomp = null;
     public static String mwc713Script = null;
+    public static String mwc713DecryptScript = null;
     public static String httpSendAddress = null;
 
     
@@ -32,6 +33,7 @@ public class listener extends HttpServlet
         BufferedReader buf = null;
         acomp = new AsyncCompletion();
         mwc713Script = getServletConfig().getInitParameter("mwc713Script");
+        mwc713DecryptScript = getServletConfig().getInitParameter("mwc713decryptScript");
 
         
         ProcessBuilder pb = new ProcessBuilder(

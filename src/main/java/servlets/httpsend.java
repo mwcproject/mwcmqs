@@ -3,6 +3,8 @@ package servlets;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +26,63 @@ public class httpsend extends HttpServlet {
     
     private AsyncCompletion acomp = null;
     private String mwc713Script = null;
+    private static String mwc713DecryptScript = null;
+    
+    private static Map<String,AsyncResponseHolder> responses
+             = new HashMap<String,AsyncResponseHolder>();
+    private static Object responseLock = new Object();
+    
+    private class AsyncResponseHolder
+    {
+        AsyncContext ac = null;
+        PrintWriter pw = null;
+    }
+    
+    public static void addMessage(String address, String message)
+    {
+        AsyncResponseHolder arh = null;
+        BufferedReader buf = null;
+        String line;
+
+        synchronized(responseLock)
+        {
+            arh = responses.get(address);
+        }
+        
+        if(arh == null)
+        {
+            log.error("Couldn't find an object for address: " + address);
+            return;
+        }
+        log.error("message="+message);
+
+        ProcessBuilder pb = new ProcessBuilder(
+                mwc713DecryptScript,
+                "'" + message + "'");
+
+        try
+        {
+        Process proc = pb.start();
+        buf = new BufferedReader(
+                new InputStreamReader(proc.getInputStream()));
+
+        
+        while((line=buf.readLine()) != null)
+        {
+            log.error("line="+line);
+        }
+        }
+        catch(Exception err)
+        {
+            log.error("exception encrypting slate", err);
+        }
+        finally
+        {
+            try { buf.close(); } catch(Exception ign) {}
+        }
+        
+        arh.ac.complete();
+    }
     
     private static Logger log = LoggerFactory.getLogger(httpsend.class);
     
@@ -31,6 +90,7 @@ public class httpsend extends HttpServlet {
     {
         acomp = listener.acomp;
         mwc713Script = listener.mwc713Script;
+        mwc713DecryptScript = listener.mwc713DecryptScript;
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -101,13 +161,10 @@ public class httpsend extends HttpServlet {
             } else {
                 // we pass to another thread so start async
                 AsyncContext ac = req.startAsync();
-                ac.setTimeout(60*1000);
+                ac.setTimeout(100*1000); // 100 second timeout
                 
                 // get encrypted slate
-		log.error("about to get slate: "+mwc713Script);
 
-log.error("json="+sb.toString());
-log.error("address="+address_pre);
                 obj = new JSONObject(sb.toString());
                 JSONArray params = obj.getJSONArray("params");
                 String slate = params.get(0).toString();

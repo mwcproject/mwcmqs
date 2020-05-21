@@ -194,6 +194,7 @@ public class sender extends HttpServlet
                     pw = res.getWriter();
                     //writing lastSeen in the stream as 0 because it's us.
                     pw.print("lastSeen: 0");
+                    httpsend.addMessage(address, message);
                 } else {
                     acomp.send(address, message);
                     pw = res.getWriter();
