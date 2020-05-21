@@ -6,11 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageCache
 {
-    private static Logger log = Logger.getLogger(MessageCache.class);
+    private static Logger log = LoggerFactory.getLogger(MessageCache.class);
 
     private class Entry
     {

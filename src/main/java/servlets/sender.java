@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import util.AsyncCompletion;
 
@@ -146,7 +147,7 @@ public class sender extends HttpServlet
         new HttpForwarder().start();
     }
 
-    private static Logger log = Logger.getLogger(sender.class);
+    private static Logger log = LoggerFactory.getLogger(sender.class);
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {

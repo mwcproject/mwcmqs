@@ -10,12 +10,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class AsyncCompletion
 {
-    private static Logger log = Logger.getLogger(AsyncCompletion.class);
+    private static Logger log = LoggerFactory.getLogger(AsyncCompletion.class);
 
     private class ProcessThread extends Thread
     {

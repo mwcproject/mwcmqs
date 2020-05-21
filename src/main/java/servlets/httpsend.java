@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import util.AsyncCompletion;
 
@@ -24,7 +25,7 @@ public class httpsend extends HttpServlet {
     private AsyncCompletion acomp = null;
     public static String mwc713Script = null;
     
-    private static Logger log = Logger.getLogger(httpsend.class);
+    private static Logger log = LoggerFactory.getLogger(httpsend.class);
     
     public void init()
     {

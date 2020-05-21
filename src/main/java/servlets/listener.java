@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import util.AsyncCompletion;
 import util.AsyncRequest;
@@ -17,7 +18,7 @@ import util.AsyncRequest;
 public class listener extends HttpServlet
 {
     public static final long serialVersionUID = 1L;
-    private static Logger log = Logger.getLogger(listener.class);
+    private static Logger log = LoggerFactory.getLogger(listener.class);
     
 
     public static AsyncCompletion acomp = null;
