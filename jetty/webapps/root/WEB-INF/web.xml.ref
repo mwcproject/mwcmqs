@@ -4,6 +4,14 @@
         <servlet-class>servlets.listener</servlet-class>
         <load-on-startup>0</load-on-startup>
         <async-supported>true</async-supported>
+        <init-param>
+            <param-name>mwc713Script</param-name>
+            <param-value>../scripts/mwc713.sh</param-value>
+        </init-param>
+        <init-param>
+            <param-name>mwc713decryptScript</param-name>
+            <param-value>../scripts/mwc713decrypt.sh</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>listener</servlet-name>
@@ -36,10 +44,6 @@
         <servlet-class>servlets.httpsend</servlet-class>
 	<load-on-startup>1</load_on_startup>
 	<async-supported>true</async-supported>
-        <init-param>
-            <param-name>mwc713Script</param-name>
-            <param-value>../scripts/mwc713.sh</param-value>
-        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>httpsend</servlet-name>
