@@ -96,7 +96,7 @@ public class httpsend extends HttpServlet {
             log.error("Couldn't find an object for address: " + tx_id);
             return;
         }
-        arh.pw.println(slate);
+        arh.pw.println("{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":{\"Ok\": " + slate + "}");
         arh.pw.flush();
         arh.ac.complete();
     }
