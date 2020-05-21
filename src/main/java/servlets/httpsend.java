@@ -194,6 +194,15 @@ public class httpsend extends HttpServlet {
                     }
                 }
                 
+                AsyncResponseHolder arh = new AsyncResponseHolder();
+                arh.ac = ac;
+                arh.pw = pw;
+                
+                synchronized(responseLock)
+                {
+                    responses.put(address, arh);
+                }
+                
                 acomp.send(address, encrypted_slate);
             }
         } catch (Exception e) {
