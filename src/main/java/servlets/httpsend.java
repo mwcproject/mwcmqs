@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.AsyncContext;
@@ -36,6 +37,46 @@ public class httpsend extends HttpServlet {
     {
         AsyncContext ac = null;
         PrintWriter pw = null;
+        long timeCreated = -1;
+    }
+    
+    private class HouseKeeper extends Thread
+    {
+        public HouseKeeper()
+        {
+            setDaemon(true);
+            setName("Httpsend housekeeper");
+        }
+        
+        public void run()
+        {
+            while(true)
+            {
+                log.info("Running housekeeper");
+                
+                try { Thread.sleep(1000 * 60 * 10); } catch(Exception ign) {}
+                
+                // Check for old values that were not deleted.
+                long timeNow = System.currentTimeMillis();
+                long maxAge = 1000 * 60 * 10;
+                int removeCount = 0;
+                synchronized(responseLock)
+                {
+                    Iterator <String>itt = responses.keySet().iterator();
+                    while(itt.hasNext())
+                    {
+                        String next = itt.next();
+                        AsyncResponseHolder arh = responses.get(next);
+                        if(timeNow - arh.timeCreated > maxAge)
+                        {
+                            removeCount++;
+                            itt.remove();
+                        }
+                    }
+                }
+                log.info("Removed " + removeCount + " responses.");
+            }
+        }
     }
     
     public static void addMessage(String address, String message)
@@ -71,7 +112,7 @@ public class httpsend extends HttpServlet {
                 }
             }
             
-            System.out.println("Slate="+slate);
+            log.debug("Slate="+slate);
             
             JSONObject obj = new JSONObject(slate);
             tx_id = obj.getString("id");
@@ -88,7 +129,7 @@ public class httpsend extends HttpServlet {
         
         synchronized(responseLock)
         {
-            arh = responses.get(tx_id);
+            arh = responses.remove(tx_id);
         }
         
         if(arh == null)
@@ -108,6 +149,8 @@ public class httpsend extends HttpServlet {
         acomp = listener.acomp;
         mwc713Script = listener.mwc713Script;
         mwc713DecryptScript = listener.mwc713DecryptScript;
+        
+        new HouseKeeper().start();
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -217,6 +260,7 @@ public class httpsend extends HttpServlet {
                 AsyncResponseHolder arh = new AsyncResponseHolder();
                 arh.ac = ac;
                 arh.pw = pw;
+                arh.timeCreated = System.currentTimeMillis();
                 
                 log.debug("Putting object for: " + address);
 
