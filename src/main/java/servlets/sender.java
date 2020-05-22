@@ -169,7 +169,7 @@ public class sender extends HttpServlet
             String address = req.getParameter("address");
             String message = jb.toString();
             
-            log.error("message="+message);
+            log.debug("message="+message);
             
             boolean is_target_domain = true;
             String target_domain = DEFAULT_MWCMQS_DOMAIN;
@@ -190,7 +190,7 @@ public class sender extends HttpServlet
                 
                 if(address.equals(listener.httpSendAddress))
                 {
-                    log.error("Got the special case");
+                    log.debug("Got the special case");
                     pw = res.getWriter();
                     //writing lastSeen in the stream as 0 because it's us.
                     pw.print("lastSeen: 0");

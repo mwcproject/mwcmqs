@@ -40,7 +40,6 @@ public class listener extends HttpServlet
                 mwc713Script,
                 "''",
                 "");
-log.error("Init listener");
         try
         {
             Process proc = pb.start();
@@ -54,7 +53,7 @@ log.error("Init listener");
                     address = line.substring(line.indexOf(":") + 2);
             }
             httpSendAddress = address;
-            log.error("Address="+address);
+            log.info("Address="+address);
         } catch(Exception err)
         {
             log.error("exception", err);

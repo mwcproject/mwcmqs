@@ -45,7 +45,7 @@ public class httpsend extends HttpServlet {
         String line;
         String tx_id = null;
 
-        log.error("message="+message);
+        log.debug("message="+message);
 
         
         ProcessBuilder pb = new ProcessBuilder(
@@ -63,7 +63,7 @@ public class httpsend extends HttpServlet {
 
             while((line=buf.readLine()) != null)
             {
-                log.error("decryptline="+line);
+                log.debug("decryptline="+line);
                 if(line.startsWith("slate='"))
                 {
                     slate = line.substring(7);
@@ -78,7 +78,7 @@ public class httpsend extends HttpServlet {
         }
         catch(Exception err)
         {
-            log.error("exception encrypting slate", err);
+            log.debug("exception encrypting slate", err);
         }
         finally
         {
@@ -93,7 +93,7 @@ public class httpsend extends HttpServlet {
         
         if(arh == null)
         {
-            log.error("Couldn't find an object for address: " + tx_id);
+            log.debug("Couldn't find an object for address: " + tx_id);
             return;
         }
         arh.pw.println("{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":{\"Ok\": " + slate + "}}");
@@ -134,7 +134,7 @@ public class httpsend extends HttpServlet {
         try {
             buf = new BufferedReader(new InputStreamReader(req.getInputStream()));
             String line;
-            log.error("address="+address);
+            log.debug("address="+address);
 
             pw = new PrintWriter(res.getOutputStream());
 
@@ -160,7 +160,7 @@ public class httpsend extends HttpServlet {
             JSONObject obj = new JSONObject(sb.toString());
             if("check_version".equalsIgnoreCase(obj.getString("method")))
             {
-                log.error("got a checkversion");
+                log.debug("got a checkversion");
                 pw.println("{\n" + 
                         "  \"id\": 1,\n" + 
                         "  \"jsonrpc\": \"2.0\",\n" + 
@@ -188,8 +188,8 @@ public class httpsend extends HttpServlet {
                 String slate = slateObj.toString();
                 String tx_id = slateObj.getString("id");
 
-                log.error("slate="+slate);
-                log.error("address_pre="+address_pre);
+                log.debug("slate="+slate);
+                log.debug("address_pre="+address_pre);
                 
                 ProcessBuilder pb = new ProcessBuilder(
                         mwc713Script,
@@ -204,7 +204,7 @@ public class httpsend extends HttpServlet {
                 String encrypted_slate = null;
                 while((line=buf2.readLine()) != null)
                 {
-                    log.error("line="+line);
+                    log.debug("line="+line);
                     if(line.startsWith("slate="))
                     {
                         encrypted_slate = line.substring(line.indexOf('\'')+1);
@@ -218,7 +218,7 @@ public class httpsend extends HttpServlet {
                 arh.ac = ac;
                 arh.pw = pw;
                 
-                log.error("Putting object for: " + address);
+                log.debug("Putting object for: " + address);
 
                 synchronized(responseLock)
                 {
