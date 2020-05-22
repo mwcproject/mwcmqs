@@ -42,7 +42,7 @@
     <servlet>
         <servlet-name>httpsend</servlet-name>
         <servlet-class>servlets.httpsend</servlet-class>
-	<load-on-startup>1</load_on_startup>
+	<load-on-startup>1</load-on-startup>
 	<async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
