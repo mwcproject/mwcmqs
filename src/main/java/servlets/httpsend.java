@@ -52,9 +52,8 @@ public class httpsend extends HttpServlet {
         {
             while(true)
             {
-                log.info("Running housekeeper");
-                
                 try { Thread.sleep(1000 * 60 * 10); } catch(Exception ign) {}
+                log.info("Running housekeeper");
                 
                 // Check for old values that were not deleted.
                 long timeNow = System.currentTimeMillis();
