@@ -15,4 +15,4 @@ log4j2-impl
 logging
 
 [exec]
--Dorg.eclipse.jetty.util.log.class?=org.eclipse.jetty.util.log.Slf4jLog -Xmx128M -Xms128M -Xss128M
+-Dorg.eclipse.jetty.util.log.class?=org.eclipse.jetty.util.log.Slf4jLog
