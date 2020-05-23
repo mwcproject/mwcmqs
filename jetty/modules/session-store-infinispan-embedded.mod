@@ -1,5 +1,3 @@
-DO NOT EDIT - See: https://www.eclipse.org/jetty/documentation/current/startup-modules.html
-
 [description]
 Enables session data store in a local Infinispan cache
 
@@ -8,28 +6,19 @@ session
 
 [provides]
 session-store
-session-store-infnispan-embedded
 
 [depend]
-sessions
+sessions/infinispan/infinispan-common
+infinispan-embedded
+sessions/infinispan/embedded/infinispan-embedded-libs
 
 [files]
-maven://org.infinispan/infinispan-embedded/7.1.1.Final|lib/infinispan/infinispan-embedded-7.1.1.Final.jar
-basehome:modules/session-store-infinispan-embedded/infinispan-embedded.xml|etc/infinispan-embedded.xml
+basehome:modules/sessions/infinispan/embedded/infinispan.xml|etc/infinispan.xml
 
-
-[xml]
-etc/sessions/infinispan/default.xml
-
-[lib]
-lib/jetty-infinispan-${jetty.version}.jar
-lib/infinispan/*.jar
-
-[license]
-Infinispan is an open source project hosted on Github and released under the Apache 2.0 license.
-http://infinispan.org/
-http://www.apache.org/licenses/LICENSE-2.0.html
+[ini]
+infinispan.version?=9.4.8.Final
 
 [ini-template]
+#jetty.session.infinispan.idleTimeout.seconds=0
 #jetty.session.gracePeriod.seconds=3600
 #jetty.session.savePeriod.seconds=0
