@@ -9,7 +9,7 @@ FQDN=$1
 
 if [ -z "$FQDN" ]
 then
-  echo "Usage:  provision_mqs.sh <thos host fqdn>"
+  echo "Usage:  provision_mqs.sh <this host fqdn>"
   exit 1
 fi
 
