@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.AsyncCompletion;
+import util.Memory;
 
 public class httpsend extends HttpServlet {
     /**
@@ -150,6 +151,9 @@ public class httpsend extends HttpServlet {
         mwc713DecryptScript = listener.mwc713DecryptScript;
         
         new HouseKeeper().start();
+
+        // Just need to start
+        Memory.startMonitoringThread();
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
