@@ -1,12 +1,13 @@
 package util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Memory {
-    private static Logger log = Logger.getLogger("Memory");
+    private static Logger log = LoggerFactory.getLogger(Memory.class);
     private static Thread memSizeMonThread = null;
 
     public static void startMonitoringThread()
@@ -26,20 +27,20 @@ public class Memory {
                         Thread.sleep(60000); // Every minute seconds to check
 
                         {
-                            log.log(Level.INFO,"MEMPROFILE: Runtime  totalMemory(mb)=" +
+                            log.info("MEMPROFILE: Runtime  totalMemory(mb)=" +
                                     Runtime.getRuntime().totalMemory()/1024/1024 + " freeMemory(mb)=" +
                                     Runtime.getRuntime().freeMemory()/1024/1024);
 
                             // Additional mem usage info
                             MemoryMXBean memInfo = ManagementFactory.getMemoryMXBean();
 
-                            log.log(Level.INFO,"MEMPROFILE: heapUsage(mb)=" +
+                            log.info("MEMPROFILE: heapUsage(mb)=" +
                                     memInfo.getHeapMemoryUsage().getUsed()/1024/1024 + " heapMax(mb)=" + memInfo.getHeapMemoryUsage().getMax()/1024/1024 + " nonHeapUsage(mb)=" + memInfo.getNonHeapMemoryUsage().getUsed()/1024/1024 +
                                     " nonHeapMax = " + memInfo.getNonHeapMemoryUsage().getMax() );
                         }
                     }
                     catch (Exception ex) {
-                        log.log(Level.SEVERE,"memSizeMonThread failed", ex);
+                        log.info("memSizeMonThread failed", ex);
                     }
                 }
             }
