@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build and deploy Explorer
-set -x
+#set -x
 
 set -e
 
