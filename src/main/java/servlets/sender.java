@@ -153,6 +153,9 @@ public class sender extends HttpServlet
     {
         log.info("sender: " + req);
 
+        // Add CORS header
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        
         StringBuilder jb = new StringBuilder();
         String line = null;
         

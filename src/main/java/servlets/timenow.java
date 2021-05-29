@@ -15,6 +15,9 @@ public class timenow extends HttpServlet
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
     {
+        // Add CORS header
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        
         try {
             String timeNow = Long.toString(System.currentTimeMillis());
             res.getOutputStream().write(timeNow.getBytes());

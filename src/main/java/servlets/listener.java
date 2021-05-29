@@ -69,6 +69,9 @@ public class listener extends HttpServlet
     {
         log.info("listener: " + req);
 
+        // Add CORS header
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        
         try
         {
             res.setContentType("text/html");//setting the content type

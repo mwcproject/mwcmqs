@@ -158,6 +158,9 @@ public class httpsend extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
     {
+        // Add CORS header
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        
         String domain = sender.domain;
         String address = req.getParameter("address");
 
